@@ -12,8 +12,8 @@ const TallyWindow = () => {
           <GateWayOfTally />
         </Layout>
       </div>{" "}
-      <div className="w-full max-w-32 flex flex-col gap-1 bg-[#0B3A33] ">
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
+      <div className="w-full  max-w-32 flex flex-col gap-1 bg-[#0B3A33] ">
+        <div className="bg-[#115445] px-3 py-3  text-white text-center rounded-tl-sm rounded-bl-sm">
           F10
         </div>
         <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
