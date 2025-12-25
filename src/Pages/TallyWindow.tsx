@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import HorizontalBar from "../Components/HorizontalBar";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import CalclulatorArea from "../Components/CalclulatorArea";
+import Layout from "../Components/Layout";
 
 const TallyWindow = () => {
   return (
-    <div className="h-screen flex">
-      <div className="h-full w-full">
-        {" "}
-        <HorizontalBar />
-        <GateWayOfTally />
-        <CalclulatorArea />
-      </div>
+    <div className="flex w-full">
+      <div className="w-full flex flex-col">
+        <Layout>
+          <GateWayOfTally />
+        </Layout>
+      </div>{" "}
       <div className="w-full max-w-32 flex flex-col gap-1 bg-[#0B3A33] ">
         <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
           F10
@@ -80,6 +80,7 @@ const TallyWindow = () => {
           F10
         </div>
       </div>
+      <Outlet />
     </div>
   );
 };
@@ -102,8 +103,35 @@ const GateWayOfTally = () => {
     );
     setDate(now.toLocaleDateString());
   }, []);
+  const itemsRef = useRef<(HTMLElement | null)[]>([]);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  useEffect(() => {
+    itemsRef.current[activeIndex]?.focus();
+  }, [activeIndex]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((prev) =>
+          prev < itemsRef.current.length - 1 ? prev + 1 : 0
+        );
+      }
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((prev) =>
+          prev > 0 ? prev - 1 : itemsRef.current.length - 1
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
   return (
-    <div className="bg-[#FFFFD9] h-[85%] w-full flex ">
+    <div className="bg-[#FFFFD9] h-[90%] w-full flex ">
       <div className="border-r-2 border-gray-400 w-full">
         <div className="flex justify-between w-full items-start px-4 py-4 ">
           <div className="flex flex-col items-center justify-center text-sm gap-1">
@@ -158,36 +186,73 @@ const GateWayOfTally = () => {
           </table>
         </div>
       </div>
-      <div className=" w-full h-full flex items-center justify-center ">
+      <div className="w-full h-full flex items-center justify-center">
         <div className="bg-[#C9E6CA] flex flex-col items-start gap-3 w-full max-w-sm">
           <h2 className="text-white bg-[#0F493D] text-center w-full">
             Company Info
           </h2>
-          <div className="flex flex-col gap-3 px-6 pl-8  items-start w-full py-5">
-            <div className="bg-[#ABB190] px-1">
-              <select
-                className="bg-transparent text-center appearance-none cursor-pointer"
-                name="company"
-                id="company"
-              >
-                <option value="">Select a company</option>
-              </select>
-            </div>
-            <Link to="/login">
+
+          <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-5">
+            <Link
+              to="/select-company"
+              className="focus:bg-[#ABB190] w-full outline-none"
+              ref={(el) => {
+                itemsRef.current[0] = el;
+              }}
+              tabIndex={0}
+            >
+              <span className="text-red-600">S</span>elect Company
+            </Link>
+
+            <Link
+              to="/login"
+              className="focus:bg-[#ABB190] w-full outline-none"
+              ref={(el) => {
+                itemsRef.current[1] = el;
+              }}
+              tabIndex={0}
+            >
               <span className="text-green-900">L</span>ogin as Remote User
             </Link>
-            <Link to="/create-company">
+
+            <Link
+              to="/create-company"
+              className="focus:bg-[#ABB190] w-full outline-none"
+              ref={(el) => {
+                itemsRef.current[2] = el;
+              }}
+              tabIndex={0}
+            >
               <span className="text-green-900">C</span>reate Company
             </Link>
-            <div className="flex flex-col">
-              <button>
-                <span className="text-green-900">B</span>ackup
-              </button>
-              <button>
-                <span className="text-green-900">R</span>estore
-              </button>
-            </div>
-            <button>
+
+            <button
+              className="focus:bg-[#ABB190] w-full outline-none text-left"
+              ref={(el) => {
+                itemsRef.current[3] = el;
+              }}
+              tabIndex={0}
+            >
+              <span className="text-green-900">B</span>ackup
+            </button>
+
+            <button
+              className="focus:bg-[#ABB190] w-full outline-none text-left"
+              ref={(el) => {
+                itemsRef.current[4] = el;
+              }}
+              tabIndex={0}
+            >
+              <span className="text-green-900">R</span>estore
+            </button>
+
+            <button
+              className="focus:bg-[#ABB190] w-full outline-none text-left"
+              ref={(el) => {
+                itemsRef.current[5] = el;
+              }}
+              tabIndex={0}
+            >
               <span className="text-green-900">Q</span>uit
             </button>
           </div>
