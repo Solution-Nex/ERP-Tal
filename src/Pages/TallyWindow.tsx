@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import HorizontalBar from "../Common/HorizontalBar";
+import HorizontalBar from "../Components/HorizontalBar";
 import { Link } from "react-router-dom";
-import CalclulatorArea from "../Common/CalclulatorArea";
+import CalclulatorArea from "../Components/CalclulatorArea";
 
 const TallyWindow = () => {
   return (
