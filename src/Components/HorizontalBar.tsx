@@ -1,7 +1,7 @@
 import React, { type FC } from "react";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { Link } from "react-router-dom";
-const HorizontalBar: FC = () => {
+const HorizontalBar: FC = ({ green_bar_name }) => {
   return (
     <div>
       {" "}
@@ -47,7 +47,7 @@ const HorizontalBar: FC = () => {
       </div>
       <div className="bg-[#125446] w-full px-2 flex justify-between">
         <div>
-          <h1 className="capitalize text-white">Gateway of Tally</h1>
+          <h1 className="capitalize text-white">{green_bar_name}</h1>
         </div>
         <Link to={"/"} className="flex items-center gap-1">
           <h1 className="text-white">Ctrl + M</h1>
