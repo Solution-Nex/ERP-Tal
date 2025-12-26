@@ -1,61 +1,54 @@
-import React, { type FC } from "react";
-import { AiTwotoneCloseSquare } from "react-icons/ai";
+import type { FC } from "react";
 
 const Header: FC = () => {
   return (
-    <div>
-      <div className="bg-[#B8E0B8] w-full">
-        <div className="flex">
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 text-gray-500 gap-1">
-            <span className="underline">P:</span>
-            <span>Print</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 text-gray-500 gap-1">
-            <span className="underline">E:</span>
-            <span>Export</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 text-gray-500 gap-1">
-            <span className="underline">M:</span>
-            <span>E-Mail</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 text-gray-500 gap-1">
-            <span className="underline">O:</span>
-            <span>Upload</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 gap-1">
-            <span className="underline text-green-700">S:</span>
-            <span className="text-blue-900">Shop</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 gap-1">
-            <span className="underline text-green-700">K:</span>
-            <span className="text-blue-900">KeyBoard</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 gap-1">
-            <span className="underline text-green-700">K:</span>
-            <span className="text-blue-900">Control Centre</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 gap-1">
-            <span className="underline text-green-700">H:</span>
-            <span className="text-blue-900">Support Centre</span>
-          </button>
-          <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 gap-1">
-            <span className="underline text-green-700">H:</span>
-            <span className="text-blue-900">Help</span>
-          </button>
+    <>
+      <div className="transition-colors fixed top-0 left-0 right-0 z-10 shadow-md">
+        <div className="w-full bg-surface border-b border-muted">
+          <div className="flex p-3">
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 text-muted gap-2">
+              <span className="underline text-accent">P:</span>
+              <span className="text-accent">Print</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 text-muted gap-2">
+              <span className="underline text-accent">E:</span>
+              <span className="text-accent">Export</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 text-muted gap-2">
+              <span className="underline text-accent">M:</span>
+              <span className="text-accent">E-Mail</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 text-muted gap-2">
+              <span className="underline text-accent">O:</span>
+              <span className="text-accent">Upload</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 gap-2">
+              <span className="underline text-accent">S:</span>
+              <span className="text-accent">Shop</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 gap-2">
+              <span className="underline text-accent">K:</span>
+              <span className="text-accent">KeyBoard</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 gap-2">
+              <span className="underline text-accent">K:</span>
+              <span className="text-accent">Control Centre</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 gap-2">
+              <span className="underline text-accent">H:</span>
+              <span className="text-accent">Support Centre</span>
+            </button>
+            <button className="w-full  flex items-start justify-start border border-muted px-3 py-2 gap-2">
+              <span className="underline text-accent">H:</span>
+              <span className="text-accent">Help</span>
+            </button>
+          </div>
         </div>
+
+        
       </div>
-      <div className="bg-[#125446] w-full px-2 flex justify-between">
-        <div>
-          <h1 className="capitalize text-white">Compney Creation</h1>
-        </div>
-        <div className="flex items-center gap-1">
-          <h1 className="text-white">Ctrl + M</h1>
-          <button className="text-2xl">
-            <AiTwotoneCloseSquare />
-          </button>
-        </div>
-      </div>
-    </div>
+      <div className="h-16"></div>
+    </>
   );
 };
 
