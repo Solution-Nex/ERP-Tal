@@ -24,8 +24,25 @@ export const companyFormSchema = z.object({
   wordAfterDecimal: z.string().optional(),
   formalName: z.string().optional(),
   addSpaceBetweenAmountAndSymbol: z.enum(["No", "Yes"]).optional(),
-  numberOfDecimalPlaces: z.number().optional(),
-  decimalPlacesInWords: z.number().optional(),
+  numberOfDecimalPlaces: z.preprocess((val) => {
+    if (val === "" || val === null) return undefined;
+    if (typeof val === "number" && Number.isNaN(val)) return undefined;
+    // If it's a string like "2", convert to number
+    if (typeof val === "string") {
+      const n = Number(val);
+      return Number.isNaN(n) ? undefined : n;
+    }
+    return val;
+  }, z.number().optional()),
+  decimalPlacesInWords: z.preprocess((val) => {
+    if (val === "" || val === null) return undefined;
+    if (typeof val === "number" && Number.isNaN(val)) return undefined;
+    if (typeof val === "string") {
+      const n = Number(val);
+      return Number.isNaN(n) ? undefined : n;
+    }
+    return val;
+  }, z.number().optional()),
 });
 
 export type companyFormData = z.infer<typeof companyFormSchema>;
