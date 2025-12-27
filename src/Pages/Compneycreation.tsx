@@ -71,11 +71,12 @@ const Compneycreation = () => {
           <h1 className="capitalize text-black text-2xl  font-bold">
             Compney Creation
           </h1>
+          <p><span className="text-red-500">*</span> Represent required feilds </p>
         </div>
         <div className="flex items-center gap-3">
           <h1 className="text-muted">Ctrl + M</h1>
           <button className="text-2xl text-[var(--text)]">
-            <AiTwotoneCloseSquare className="w-8 h-8"/>
+            <AiTwotoneCloseSquare className="w-8 h-8" />
           </button>
         </div>
       </div>
@@ -87,7 +88,6 @@ const Compneycreation = () => {
             type="text"
             onChange={(e) => setdirectory(e)}
             value={directory}
-            reqired={true}
           />
 
           {/* Primary Mailing Details Section */}
@@ -96,6 +96,7 @@ const Compneycreation = () => {
               label="Mailing name"
               type="text"
               onChange={(e) => setmalingname(e)}
+              required
               value={malingname}
             />
             <Field
@@ -103,18 +104,21 @@ const Compneycreation = () => {
               type="text"
               onChange={(e) => setaddress(e)}
               value={address}
+              required
             />
             <Select
               label="Country"
               options={countrynames}
               value={country}
               onChange={(e) => setcountry(e)}
+              required
             />
             <Select
               label="State"
               options={countrystates[country as keyof typeof countrystates]}
               value={state}
               onChange={(e) => setstate(e)}
+              required
             />
             <Field
               label="Pincode"
@@ -131,13 +135,14 @@ const Compneycreation = () => {
               type="tel"
               onChange={(e) => setphonenumber(e)}
               value={phonenumber}
+              required
             />
             <Field
               label="Mobile no."
               type="tel"
               onChange={(e) => setmobilenumber(e)}
               value={mobilenumber}
-              reqired={true}
+              required
             />
             <Field
               label="Fax no."
@@ -150,7 +155,7 @@ const Compneycreation = () => {
               type="email"
               onChange={(e) => setemail(e)}
               value={email}
-              reqired={true}
+              required
             />
             <Field
               label="Website"
@@ -168,7 +173,7 @@ const Compneycreation = () => {
             type="text"
             onChange={(e) => setname(e)}
             value={name}
-            reqired={true}
+            required
           />
           {/* Books and Financial Year Details Section */}
           <Section title="Books and Financial Year Details">
@@ -177,14 +182,14 @@ const Compneycreation = () => {
               type="date"
               value={financialyear}
               onChange={(e) => setfinancialyear(e)}
-              reqired={true}
+              required
             />
             <Field
               label="Books beginning from"
               type="date"
               value={booksbeginning}
               onChange={(e) => setbooksbeginning(e)}
-              reqired={true}
+              required
             />
           </Section>
 

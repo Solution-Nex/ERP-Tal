@@ -2,6 +2,7 @@ interface SelectProps {
   label: string;
   value: string;
   options: string[];
+  required?: boolean;
   onChange?: (value: string) => void;
 }
 
@@ -9,12 +10,14 @@ const Select = ({
   label,
   value = "",
   options = [],
+  required= false,
   onChange
 }: SelectProps) => {
   return (
     <div className="flex flex-row justify-start align-middle border-b border-gray-300 text-md py-0.5">
       <label htmlFor={label} className="w-60">
         <b>{label}</b>
+        {required && <span className="text-red-500">*</span>}
       </label>
 
       {/* <div className="flex flex-row align-middle"> */}
