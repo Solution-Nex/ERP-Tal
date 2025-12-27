@@ -1,9 +1,10 @@
 import React, { type FC } from "react";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
-
-const Header: FC = () => {
+import { Link } from "react-router-dom";
+const HorizontalBar: FC = ({ green_bar_name }) => {
   return (
     <div>
+      {" "}
       <div className="bg-[#B8E0B8] w-full">
         <div className="flex">
           <button className="w-full  flex items-start justify-start border border-gray-400 px-2 py-2 text-gray-500 gap-1">
@@ -46,17 +47,17 @@ const Header: FC = () => {
       </div>
       <div className="bg-[#125446] w-full px-2 flex justify-between">
         <div>
-          <h1 className="capitalize text-white">Compney Creation</h1>
+          <h1 className="capitalize text-white">{green_bar_name}</h1>
         </div>
-        <div className="flex items-center gap-1">
+        <Link to={"/"} className="flex items-center gap-1">
           <h1 className="text-white">Ctrl + M</h1>
           <button className="text-2xl">
             <AiTwotoneCloseSquare />
           </button>
-        </div>
+        </Link>
       </div>
     </div>
   );
 };
 
-export default Header;
+export default HorizontalBar;
