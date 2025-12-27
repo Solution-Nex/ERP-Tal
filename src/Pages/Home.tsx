@@ -1,12 +1,11 @@
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import Companycreation from "./Compneycreation";
+import Companycreation from "./company/Compneycreation";
 
 const Home = () => {
   return (
     <div className="flex ">
       <div className="flex-1 overflow-auto">
-        
         <Header />
         <Companycreation />
         <Footer />

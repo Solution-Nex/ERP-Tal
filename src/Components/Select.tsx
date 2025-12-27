@@ -1,44 +1,44 @@
-interface SelectProps {
+import React, { forwardRef } from "react";
+
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
-  value: string;
   options: string[];
-  required?: boolean;
-  onChange?: (value: string) => void;
+  error?: string;
 }
 
-const Select = ({
-  label,
-  value = "",
-  options = [],
-  required= false,
-  onChange
-}: SelectProps) => {
-  return (
-    <div className="flex flex-row justify-start align-middle border-b border-gray-300 text-md py-0.5">
-      <label htmlFor={label} className="w-60">
-        <b>{label}</b>
-        {required && <span className="text-red-500">*</span>}
-      </label>
+const Select = forwardRef<HTMLSelectElement, SelectProps>(
+  ({ label, options = [], error, className, ...rest }, ref) => {
+    return (
+      <div className="flex flex-row justify-start align-middle border-b border-gray-300 text-md py-0.5 items-start">
+        <label htmlFor={label} className="w-60">
+          <b>{label}</b>
+          {rest.required && <span className="text-red-500">*</span>}
+        </label>
 
-      {/* <div className="flex flex-row align-middle"> */}
-        <span className="text-xl">
+        <span className="text-xl mt-2">
           <b>:</b>
         </span>
 
-        <select
-          defaultValue={value}
-          onChange={(e:React.ChangeEvent<HTMLSelectElement>) => onChange && onChange(e.target.value)}
-          className="bg-surface border w-full border-muted px-3 py-2 rounded-sm outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors text-[var(--text)]"
-        >
-          {options.map((opt, index) => (
-            <option key={index} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+        <div className="w-full flex flex-col">
+          <select
+            {...rest}
+            ref={ref}
+            aria-invalid={!!error}
+            className={`bg-surface border w-full px-3 py-2 rounded-sm outline-none transition-colors text-[var(--text)] ${error ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-100' : 'border-muted focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]'} ${className ?? ''}`}
+          >
+            {options.map((opt, index) => (
+              <option key={index} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
       </div>
-    // </div>
-  );
-};
+    );
+  }
+);
+
+Select.displayName = "Select";
 
 export default Select;
