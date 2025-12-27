@@ -221,7 +221,7 @@ const Compneycreation = () => {
 
       {/* Base Currency Information Section */}
       <Section title="Base Currency Information">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-x-8">
           <Select
             label="Base currency symbol"
             options={[currencysymbols[countrynames.indexOf(country)]]}
