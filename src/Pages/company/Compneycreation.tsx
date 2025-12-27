@@ -84,28 +84,24 @@ const Compneycreation = () => {
               <Field
                 label="Mailing name"
                 type="text"
-                // required
                 {...register("mailingName")}
                 error={errors.mailingName?.message as string | undefined}
               />
               <Field
                 label="Address"
                 type="text"
-                // required
                 {...register("address")}
                 error={errors.address?.message as string | undefined}
               />
               <Field
                 label="Country"
                 type="text"
-                // required
                 {...register("country")}
                 error={errors.country?.message as string | undefined}
               />
               <Field
                 label="State"
                 type="text"
-                // required
                 {...register("state")}
                 error={errors.state?.message as string | undefined}
               />
@@ -122,14 +118,12 @@ const Compneycreation = () => {
               <Field
                 label="Phone no."
                 type="tel"
-                // required
                 {...register("phone")}
                 error={errors.phone?.message as string | undefined}
               />
               <Field
                 label="Mobile no."
                 type="tel"
-                // required
                 {...register("mobile")}
                 error={errors.mobile?.message as string | undefined}
               />
@@ -142,7 +136,6 @@ const Compneycreation = () => {
               <Field
                 label="E-mail"
                 type="email"
-                // required
                 {...register("email")}
                 error={errors.email?.message as string | undefined}
               />
@@ -160,7 +153,6 @@ const Compneycreation = () => {
             <Field
               label="Name"
               type="text"
-              // required
               {...register("name")}
               error={errors.name?.message as string | undefined}
             />
@@ -169,7 +161,6 @@ const Compneycreation = () => {
               <Field
                 label="Financial year begins from"
                 type="date"
-                // required
                 {...register("financialYearBeginsFrom")}
                 error={
                   errors.financialYearBeginsFrom?.message as string | undefined
@@ -178,7 +169,6 @@ const Compneycreation = () => {
               <Field
                 label="Books beginning from"
                 type="date"
-                // required
                 {...register("booksBeginningFrom")}
                 error={errors.booksBeginningFrom?.message as string | undefined}
               />
@@ -281,7 +271,6 @@ const Compneycreation = () => {
             />
           </div>
         </Section>
-        <button type="submit">Submit</button>
       </form>
     </div>
   );
