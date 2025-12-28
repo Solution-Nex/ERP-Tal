@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const companyFormSchema = z.object({
-  directory: z.string().optional(),
+  // directory: z.string().optional(),
   name: z.string().min(1, " "),
   mailingName: z.string().min(1, " "),
   address: z.string().min(1, " "),

@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import Layout from "../Components/Layout";
-const GateWayofTally = () => {
+// import Layout from "../Components/Layout";
+import CalclulatorArea from "../Components/CalclulatorArea";
+const GateWayofTally: FC = () => {
   const [period, setPeriod] = useState<string>("");
   const [date, setDate] = useState<string>("");
 
   useEffect(() => {
+    document.title = "Gateway of Tally - SN ERP";
     const now = new Date();
 
     setPeriod(
@@ -45,8 +47,10 @@ const GateWayofTally = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
   return (
-    <Layout green_bar_name="Gateway of Tally">
-      <div className="bg-[#FFFFD9] h-[90%] w-full flex ">
+    <div className="min-h-screen bg-surface flex flex-col">
+      {/* Main content */}
+      <div className="flex flex-1 pt-10">
+        {/* LEFT PANEL */}
         <div className="border-r-2 border-gray-400 w-full">
           <div className="flex justify-between w-full items-start px-4 py-4 ">
             <div className="flex flex-col items-center justify-center text-sm gap-1">
@@ -101,9 +105,10 @@ const GateWayofTally = () => {
             </table>
           </div>
         </div>
+        {/* RIGHT PANEL */}
         <div className="w-full h-full flex items-center justify-center">
-          <div className="bg-[#C9E6CA] flex flex-col items-start gap-3 w-full max-w-sm">
-            <h2 className="text-white bg-[#0F493D] text-center w-full">
+          <div className="bg-[#c5c6c7] flex flex-col items-start gap-3 w-full max-w-sm mt-20">
+            <h2 className="text-white bg-[#176ee8] text-center w-full">
               Company Info
             </h2>
 
@@ -174,8 +179,10 @@ const GateWayofTally = () => {
           </div>
         </div>
       </div>
-    </Layout>
+      <div>
+        <CalclulatorArea />
+      </div>
+    </div>
   );
 };
-
 export default GateWayofTally;

@@ -1,11 +1,11 @@
-import { Outlet } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
 
-const TallyWindow = () => {
-  return (
-    <>
-      <Outlet />
-    </>
-  );
-};
+// const TallyWindow = () => {
+//   return (
+//     <>
+//       <Outlet />
+//     </>
+//   );
+// };
 
-export default TallyWindow;
+// export default TallyWindow;

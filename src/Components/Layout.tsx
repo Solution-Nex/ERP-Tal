@@ -1,86 +1,25 @@
-import React, { type FC, type ReactNode } from "react";
-import HorizontalBar from "./HorizontalBar";
-import CalclulatorArea from "./CalclulatorArea";
-import type { LayoutProps } from "../types";
+import { type FC } from "react";
+// import HorizontalBar from "./HorizontalBar";
+// import CalclulatorArea from "./CalclulatorArea";
+import { Outlet } from "react-router-dom";
+// import Footer from "./Footer";
+import Header from "./Header";
 
-const Layout: FC<LayoutProps> = ({ children, green_bar_name }) => {
+const Layout: FC = () => {
   return (
-    <div className="w-full flex ">
-      <div className="h-screen w-full">
-        <HorizontalBar green_bar_name={green_bar_name} />
-        {children}
-        <CalclulatorArea />
+    <div className="flex min-h-screen w-full">
+      {/* LEFT MAIN AREA */}
+      <div className="flex flex-col flex-1">
+        <Header />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        {/* <Footer /> */}
       </div>
-      <div className="w-full  max-w-32 flex flex-col gap-1 bg-[#0B3A33] ">
-        <div className="bg-[#115445] px-3 py-3  text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-        <div className="bg-[#115445] px-3 py-2 text-white text-center rounded-tl-sm rounded-bl-sm">
-          F10
-        </div>
-      </div>
+
+      {/* RIGHT BLUE STRIP */}
+      <div className="w-36 bg-primary" />
     </div>
   );
 };
-
 export default Layout;

@@ -27,7 +27,7 @@ const Compneycreation = () => {
   } = useForm<Company>({
     resolver: zodResolver(companyFormSchema) as Resolver<Company>,
     defaultValues: {
-      directory: "",
+      // directory: "",
       name: "",
       mailingName: "",
       address: "",
@@ -57,7 +57,7 @@ const Compneycreation = () => {
 
   const onSubmit = async (data: Company) => {
     await dispatch(createCompany(data)).unwrap();
-    // Optionally navigate or show success here
+    navigate("/");
   };
 
   const currencySymbols = ["₹", "$", "£", "€", "R$", "¥", "₨"];
@@ -83,6 +83,7 @@ const Compneycreation = () => {
 
   // keyboard handlers
   useEffect(() => {
+    document.title = "Create new Company - SN ERP";
     const handleKey = (e: KeyboardEvent) => {
       // If modal is open, handle modal-specific keys
       if (confirmOpen) {
@@ -94,18 +95,21 @@ const Compneycreation = () => {
         // allow 'y' and 'n' keys
         if (e.key.toLowerCase() === "y") {
           e.preventDefault();
+          e.stopPropagation();
           submitFromModal();
-          navigate("/");
+          // navigate("/");
         }
         if (e.key.toLowerCase() === "n") {
           e.preventDefault();
+          e.stopPropagation();
           setConfirmOpen(false);
           previouslyFocused.current?.focus();
         }
-        if(e.key === "Enter") {
+        if(e.key.toLowerCase() === "enter") {
           e.preventDefault();
+          e.stopPropagation();
           submitFromModal();
-          navigate("/");
+          // navigate("/");
         }
         return;
       }
@@ -149,12 +153,12 @@ const Compneycreation = () => {
     setConfirmOpen(false);
     previouslyFocused.current?.blur();
     // programmatically run react-hook-form submit
-    handleSubmit(onSubmit)();
+    handleSubmit(onSubmit)()
   };
 
   return (
     <>
-      <div className="w-full px-2 flex items-center justify-between bg-gray-300">
+      <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
         <div>
           <h1 className="capitalize text-black text-md  font-semibold">
             Compney Creation

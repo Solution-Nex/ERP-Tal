@@ -30,7 +30,10 @@ interface CompanyState {
 }
 
 const initialState: CompanyState = {
-  companies: [],
+  companies: [
+    { _id: "1", name: "Demo Company", mailingName: "Demo Company", address: "123 Demo St", country: "Demo Country", useSecurityControl: "No", baseCurrencySymbol: "₹", state: "Demo State", phone: "1234567890", mobile: "0987654321", pincode: "123456", email: "demo@example.com", financialYearBeginsFrom: "2024-04-01", fax: "123-456-7890", tallyVaultPassword: "", repeatPassword: "", booksBeginningFrom: "2024-04-01" },
+    { _id: "2", name: "Test Company", mailingName: "Test Company", address: "456 Test Ave", country: "Test Country", useSecurityControl: "No", baseCurrencySymbol: "$", state: "Test State", phone: "2345678901", mobile: "1987654320", pincode: "654321", email: "test@example.com", financialYearBeginsFrom: "2024-04-01", fax: "987-654-3210", tallyVaultPassword: "", repeatPassword: "", booksBeginningFrom: "2024-04-01" },
+  ],
   selectedCompany: null,
   companiesFetched: false,
   loading: false,
@@ -101,10 +104,9 @@ const companySlice = createSlice({
       state.loading = false;
       state.error = null;
     },
-    setSelectedCompany: (state, action: PayloadAction<string | null>) => {
-      const id = action.payload;
-      state.selectedCompany =
-        id == null ? null : state.companies.find((c) => c._id === id) ?? null;
+    setSelectedCompany: (state, action: PayloadAction<CompanyFromBackend | null>) => {
+      const company = action.payload;
+      state.selectedCompany = company === null ? null : state.companies.find((c) => c._id === company._id) ?? null;
     },
   },
   extraReducers: (builder) => {
