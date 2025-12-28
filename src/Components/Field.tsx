@@ -13,21 +13,23 @@ const Field = forwardRef<HTMLInputElement, FieldProps>(
     const isPassword = type === "password";
 
     return (
-      <div className="flex flex-row justify-start align-middle items-start text-md py-1 border-b border-gray-300">
-        <label htmlFor={label} className="w-60">
-          <b>{label}</b>
+      <div className="flex flex-row justify-start items-center text-md ">
+        <label htmlFor={label} className="text-sm min-w-48">
+          {label}
           {rest.required && <span className="text-red-500">*</span>}
         </label>
-        <span className="text-xl mt-2">
-          <b>:</b>
-        </span>
+        <span className="text-xl">:</span>
         <div className="w-full flex flex-col">
           <input
             {...rest}
             ref={ref}
             type={isPassword ? (viewPassword ? "text" : "password") : type}
             aria-invalid={!!error}
-            className={`bg-surface border px-3 py-2 rounded-sm outline-none transition-colors text-[var(--text)] w-full ${error ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-100' : 'border-muted focus:border-blue-400 focus:ring-1 focus:ring-blue-400'} ${className ?? ''}`}
+            className={`bg-gray-300 focus:bg-black max-w-52 focus:text-white outline-none transition-colors text-[var(--text)] w-full ${
+              error
+                ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-100"
+                : "border-muted focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+            } ${className ?? ""}`}
           />
 
           {isPassword && rest.value && (

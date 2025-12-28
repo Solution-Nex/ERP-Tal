@@ -1,10 +1,12 @@
-import React from 'react'
 import './index.css'
 import Home from './Pages/Home';
+import { BrowserRouter } from 'react-router-dom';
 
 function App() {
   return (
-      <Home/>
+      <BrowserRouter>
+        <Home/>
+      </BrowserRouter>
   );
 }
 

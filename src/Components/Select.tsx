@@ -9,22 +9,24 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, options = [], error, className, ...rest }, ref) => {
     return (
-      <div className="flex flex-row justify-start align-middle border-b border-gray-300 text-md py-0.5 items-start">
-        <label htmlFor={label} className="w-60">
-          <b>{label}</b>
+      <div className="flex flex-row justify-start text-sm items-center">
+        <label htmlFor={label} className="min-w-48">
+          {label}
           {rest.required && <span className="text-red-500">*</span>}
         </label>
 
-        <span className="text-xl mt-2">
-          <b>:</b>
-        </span>
+        <span className="text-xl">:</span>
 
         <div className="w-full flex flex-col">
           <select
             {...rest}
             ref={ref}
             aria-invalid={!!error}
-            className={`bg-surface border w-full px-3 py-2 rounded-sm outline-none transition-colors text-[var(--text)] ${error ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-100' : 'border-muted focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]'} ${className ?? ''}`}
+            className={`bg-gray-300 max-w-52 focus:bg-black focus:text-white border w-full outline-none transition-colors text-[var(--text)] ${
+              error
+                ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-100"
+                : "border-muted focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
+            } ${className ?? ""}`}
           >
             {options.map((opt, index) => (
               <option key={index} value={opt}>
