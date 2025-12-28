@@ -374,18 +374,18 @@ const Compneycreation = () => {
             }}
           >
             <div
-              className="w-[480px] bg-white rounded-lg shadow-xl p-6"
+              className="w-[200px] bg-surface  shadow-xl p-6"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold mb-3">Confirm Submit</h2>
-              <p className="text-sm text-gray-600 mb-6">
+              <h2 className="text-md font-semibold mb-3">Confirm Submit</h2>
+              {/* <p className="text-sm text-gray-600 mb-6">
                 Are you sure you want to submit the form?
-              </p>
+              </p> */}
 
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-between gap-3">
                 <button
                   type="button"
-                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+                  className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
                   onClick={() => {
                     setConfirmOpen(false);
                     previouslyFocused.current?.focus();
@@ -396,7 +396,7 @@ const Compneycreation = () => {
                 <button
                   ref={yesButtonRef}
                   type="button"
-                  className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                  className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
                   onClick={submitFromModal}
                 >
                   Yes
