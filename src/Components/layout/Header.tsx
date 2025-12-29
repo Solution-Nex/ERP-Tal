@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { NavButton } from "./NavButton";
+import { NavButton } from "../common/NavButton";
 
 const Header: FC = () => {
   return (

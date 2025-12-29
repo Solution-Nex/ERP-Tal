@@ -1,5 +1,5 @@
 import React from "react";
-import {NavButton} from "./NavButton"
+import {NavButton} from "./common/NavButton"
 
 const Footer: React.FC = () => {
   return (

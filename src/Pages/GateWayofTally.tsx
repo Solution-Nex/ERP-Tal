@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-// import Layout from "../Components/Layout";
-import CalclulatorArea from "../Components/CalclulatorArea";
+import CalclulatorArea from "../Components/common/CalclulatorArea";
 const GateWayofTally: FC = () => {
   const [period, setPeriod] = useState<string>("");
   const [date, setDate] = useState<string>("");
