@@ -9,7 +9,9 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, options = [], error, className, ...rest }, ref) => {
     return (
-      <div className="flex flex-row justify-start text-sm items-center">
+      <div
+        className={`flex flex-row justify-start text-sm items-center ${className}`}
+      >
         <label htmlFor={label} className="min-w-48">
           {label}
           {rest.required && <span className="text-red-500">*</span>}
