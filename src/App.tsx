@@ -8,6 +8,7 @@ const Compneycreation = lazy(()=> import("./Pages/company/Compneycreation"))
 const Login = lazy(()=> import("./Pages/auth/Login"))
 const VoucherList = lazy(()=> import("./Pages/vouchers/VoucherList"))
 const VoucherForm = lazy(()=> import("./Pages/vouchers/VoucherForm"))
+const NotFound = lazy(()=> import("./Pages/NotFound"))
 
 function App() {
   return (
@@ -17,10 +18,11 @@ function App() {
           <Route index element={<GateWayofTally />} />
           <Route path="/select-company" element={<SelectCompany />} />
           <Route path="/create-company" element={<Compneycreation />} />
-          <Route path="/vouchers" element={<VoucherList />} />
+          <Route path="/accounts/vouchers" element={<VoucherList />} />
           <Route path="/vouchers/new" element={<VoucherForm />} />
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
