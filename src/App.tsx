@@ -6,6 +6,8 @@ const GateWayofTally = lazy(()=> import("./Pages/GateWayofTally"))
 const SelectCompany = lazy(()=> import("./Pages/company/SelectCompany"))
 const Compneycreation = lazy(()=> import("./Pages/company/Compneycreation"))
 const Login = lazy(()=> import("./Pages/auth/Login"))
+const VoucherList = lazy(()=> import("./Pages/vouchers/VoucherList"))
+const VoucherForm = lazy(()=> import("./Pages/vouchers/VoucherForm"))
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
           <Route index element={<GateWayofTally />} />
           <Route path="/select-company" element={<SelectCompany />} />
           <Route path="/create-company" element={<Compneycreation />} />
+          <Route path="/vouchers" element={<VoucherList />} />
+          <Route path="/vouchers/new" element={<VoucherForm />} />
         </Route>
         <Route path="/login" element={<Login />} />
       </Routes>
