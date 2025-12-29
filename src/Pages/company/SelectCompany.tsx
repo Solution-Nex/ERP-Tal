@@ -21,6 +21,19 @@ const SelectCompany = () => {
     if (!companiesFetched) dispatch(fetchCompanies());
   }, [companiesFetched, dispatch]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        navigate(-1);
+      }
+      if (e.key === "ArrowRight") {
+        navigate(+1);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigate]);
+
   // Filtered list based on search
   const filteredCompanies = companies.filter((cmp) =>
     cmp.name.toLowerCase().includes(search.toLowerCase())

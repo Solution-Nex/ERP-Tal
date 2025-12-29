@@ -85,6 +85,13 @@ const Compneycreation = () => {
   useEffect(() => {
     document.title = "Create new Company - SN ERP";
     const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        navigate(-1);
+      }
+      if (e.key === "ArrowRight") {
+        navigate(+1);
+      }
+
       // If modal is open, handle modal-specific keys
       if (confirmOpen) {
         if (e.key === "Escape") {

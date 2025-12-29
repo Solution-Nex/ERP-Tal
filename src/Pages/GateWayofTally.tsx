@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CalclulatorArea from "../Components/common/CalclulatorArea";
 const GateWayofTally: FC = () => {
+  const navigate = useNavigate()
   const [period, setPeriod] = useState<string>("");
   const [date, setDate] = useState<string>("");
 
@@ -27,6 +28,12 @@ const GateWayofTally: FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        navigate(-1);
+      }
+      if (e.key === "ArrowRight") {
+        navigate(+1);
+      }
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setActiveIndex((prev) =>
