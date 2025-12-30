@@ -8,27 +8,21 @@ import Section from "../../Components/common/Section";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { companyFormSchema } from "./types";
 import type { Company } from "./types";
-import { useAppDispatch } from "../../store/store";
-import { createCompany } from "./slice";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { createCompany,setEditing,updateCompany,type CompanyFromBackend } from "./slice";
 
 const Compneycreation = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const {isEditing, selectedCompany} = useAppSelector((state) => state.company);
   const formRef = useRef<HTMLFormElement | null>(null);
   const yesButtonRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Company>({
-    resolver: zodResolver(companyFormSchema) as Resolver<Company>,
-    defaultValues: {
-      // directory: "",
-      name: "",
+  const defaultValues: Company = {
+    name: "",
       mailingName: "",
       address: "",
       country: "",
@@ -49,20 +43,49 @@ const Compneycreation = () => {
       ShowAmountInMillions: "No",
       wordAfterDecimal: "",
       formalName: "",
-      // addSpaceBetweenAmountAndSymbol: "No",
       numberOfDecimalPlaces: undefined,
-      // decimalPlacesInWords: undefined,
-    },
+  };
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Company>({
+    resolver: zodResolver(companyFormSchema) as Resolver<Company>,
+    defaultValues: defaultValues,
   });
 
+  //When editing, pass current values 
+  useEffect(()=>{
+    if (isEditing && selectedCompany) {
+      const {_id, ...company} = selectedCompany as CompanyFromBackend;
+      reset(company);
+    }
+  },[isEditing, selectedCompany, reset])
+
+  // Reset isEditing when component unmounts (user leaves without saving)
+  useEffect(() => {
+    return () => {
+      dispatch(setEditing(false));
+    };
+  }, [dispatch]);
+
+  // On form submit
   const onSubmit = async (data: Company) => {
-    await dispatch(createCompany(data)).unwrap();
+    if (isEditing && selectedCompany) {
+      await dispatch(updateCompany({id: selectedCompany._id, data})).unwrap();
+      dispatch(setEditing(false))
+    } else {
+      await dispatch(createCompany(data)).unwrap();
+    }
+    reset(defaultValues);
     navigate("/");
   };
 
   const currencySymbols = ["₹", "$", "£", "€", "R$", "¥", "₨"];
 
-  // helper: move focus to next/prev focusable element inside the form
+  // move focus to next/prev focusable element inside the form
   const moveFocus = (delta: number) => {
     const form = formRef.current;
     if (!form) return;
@@ -145,6 +168,7 @@ const Compneycreation = () => {
           const isTextArea = active?.tagName === "TEXTAREA";
           if (!isTextArea) {
             e.preventDefault();
+            e.stopPropagation();
             previouslyFocused.current = active ?? null;
             setConfirmOpen(true);
           }
@@ -152,29 +176,37 @@ const Compneycreation = () => {
       // }
     };
 
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [confirmOpen, navigate]);
-
+    document.addEventListener("keydown", handleKey, true);
+    return () =>{ 
+      document.removeEventListener("keydown", handleKey, true);
+    }
+  }, [confirmOpen, navigate, dispatch]);
+  // Submit from modal
   const submitFromModal = () => {
     setConfirmOpen(false);
     previouslyFocused.current?.blur();
-    // programmatically run react-hook-form submit
     handleSubmit(onSubmit)()
   };
 
   return (
     <>
-      <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
+      <div className="w-full pt-10 flex items-center px-4 justify-between bg-gray-300">
         <div>
-          <h1 className="capitalize text-black text-md  font-semibold">
-            Compney Creation
+          <h1 className="capitalize text-black text-md font-semibold">
+            {isEditing ? "Alter Company Details" : "Compney Creation"}
           </h1>
         </div>
         <div className="flex items-center gap-3">
           <h1 className="text-muted">Ctrl + M</h1>
-          <button type="button" className=" text-[var(--text)]" aria-label="Close">
-            <AiTwotoneCloseSquare className="w-5 h-5" onClick={() => navigate("/")} />
+          <button
+            type="button"
+            className=" text-[var(--text)]"
+            aria-label="Close"
+          >
+            <AiTwotoneCloseSquare
+              className="w-5 h-5"
+              onClick={() => navigate("/")}
+            />
           </button>
         </div>
       </div>

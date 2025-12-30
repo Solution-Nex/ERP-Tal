@@ -5,11 +5,13 @@ import TallyWindow from "../Components/common/TallyWindow";
 import { useAppSelector } from "../store/store";
 import { setSidebarButtons } from "./sidebarSlice";
 import { useAppDispatch } from "../store/store";
+import { setEditing, setSelectedCompany } from "./company/slice";
 const GateWayofTally: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [period, setPeriod] = useState<string>("");
   const [date, setDate] = useState<string>("");
+  const [infoMenu, setInfoMenu] = useState<boolean>(false);
   const { selectedCompany } = useAppSelector((state) => state.company);
 
   useEffect(() => {
@@ -25,6 +27,7 @@ const GateWayofTally: FC = () => {
     );
     setDate(now.toLocaleDateString());
   }, []);
+
   const itemsRef = useRef<(HTMLElement | null)[]>([]);
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -38,10 +41,18 @@ const GateWayofTally: FC = () => {
         e.preventDefault();
         navigate("/select-company");
       }
-      
+
       if (e.altKey && e.key === "F1") {
+        console.log("Hello alt+F1");
         e.preventDefault();
-        navigate("/delete-company");
+        dispatch(setSelectedCompany(null));
+        console.log("after alt+F1 selectedCompany", selectedCompany);
+        navigate("/");
+      }
+
+      if (e.altKey && e.key === "F3") {
+        e.preventDefault();
+        setInfoMenu(true);
       }
 
       if (e.key === "ArrowLeft") {
@@ -67,18 +78,29 @@ const GateWayofTally: FC = () => {
           prev > 0 ? prev - 1 : itemsRef.current.length - 1
         );
       }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const active = itemsRef.current[activeIndex];
+        if (active) {
+          active.click();
+        }
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [activeIndex, navigate, dispatch]);
 
   const functionKeys = [
     { alpha: "F1", text: "Select Comp", alt: false, path: "/select-company" },
-    { alpha: "F1", text: "Shut Comp", alt: true, path: "/delete-company" },
-    { alpha: "F2", text: "data", alt: false, path: "/select-company" },
-    { alpha: "F2", text: "Period", alt: true, path: "/select-company" },
-    { alpha: "F3", text: "Cmp Info", alt: false, path: "/select-company" },
+    { alpha: "F1", text: "Shut Comp", alt: true }, //close company
+    { alpha: "F2", text: "data", alt: false },
+    { alpha: "F2", text: "Period", alt: true },
+    { alpha: "F3", text: "Cmp Info", alt: true }, // change Gateway of tally opyions
+    { alpha: "F4", text: "Connent", alt: false },
+    { alpha: "F11", text: "Features", alt: false },
+    { alpha: "F12", text: "Configure", alt: false },
   ];
 
   useEffect(() => {
@@ -88,7 +110,7 @@ const GateWayofTally: FC = () => {
     return () => {
       dispatch(setSidebarButtons([]));
     };
-  }, [functionKeys]);
+  }, [functionKeys, selectedCompany]);
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
@@ -157,56 +179,112 @@ const GateWayofTally: FC = () => {
         <div className="w-full h-full my-auto flex justify-center">
           <div className="bg-[#c5c6c7] flex flex-col items-start gap-3 w-full max-w-sm">
             {selectedCompany ? (
-              <TallyWindow title="Gateway of Tally">
-                <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-6">
-                  <div className="flex flex-col mb-2 text-sm w-full">
-                    <h2 className="mb-1 text-sm font-semibold">Masters</h2>
+              infoMenu ? (
+                <TallyWindow title="Company info">
+                  <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-6">
                     <Link
-                      to="/accounts/accounts-info"
+                      to="/select-company"
                       className="focus:bg-[#ABB190] w-full outline-none"
                       ref={(el) => {
                         itemsRef.current[0] = el;
                       }}
                       tabIndex={0}
                     >
-                      Accounts info
+                      Select Company
                     </Link>
                     <Link
-                      to="/inventory/inventory-info"
-                      className="focus:bg-[#ABB190] w-full outline-none"
+                      to={""}
+                      onClick={() => {
+                        dispatch(setSelectedCompany(null));
+                        navigate("/");
+                      }}
+                      className="focus:bg-[#ABB190] w-full text-start outline-none"
                       ref={(el) => {
                         itemsRef.current[1] = el;
                       }}
                       tabIndex={0}
                     >
-                      Inventory info
+                      Shut company
                     </Link>
-                  </div>
-                  <div className="flex flex-col mb-3 text-sm w-full">
-                    <h2 className="mb-1 text-sm font-semibold">Transactions</h2>
                     <Link
-                      to="/accounts/vouchers"
+                      to="/create-company"
                       className="focus:bg-[#ABB190] w-full outline-none"
                       ref={(el) => {
                         itemsRef.current[2] = el;
                       }}
                       tabIndex={0}
                     >
-                      Accounting vouchers
+                      Create Company
                     </Link>
-                    <Link
-                      to="/inventory/inventory-vouchers"
-                      className="focus:bg-[#ABB190] w-full outline-none"
+                    <button
+                      onClick={() => {
+                        dispatch(setEditing(true));
+                        navigate("/create-company");
+                      }}
+                      className="focus:bg-[#ABB190] text-start w-full outline-none"
                       ref={(el) => {
                         itemsRef.current[3] = el;
                       }}
                       tabIndex={0}
                     >
-                      Inventory vouchers
-                    </Link>
+                      Alter
+                    </button>
                   </div>
-                </div>
-              </TallyWindow>
+                </TallyWindow>
+              ) : (
+                <TallyWindow title="Gateway of Tally">
+                  <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-6">
+                    <div className="flex flex-col mb-2 text-sm w-full">
+                      <h2 className="mb-1 text-sm font-semibold">Masters</h2>
+                      <Link
+                        to="/accounts/accounts-info"
+                        className="focus:bg-[#ABB190] w-full outline-none"
+                        ref={(el) => {
+                          itemsRef.current[0] = el;
+                        }}
+                        tabIndex={0}
+                      >
+                        Accounts info
+                      </Link>
+                      <Link
+                        to="/inventory/inventory-info"
+                        className="focus:bg-[#ABB190] w-full outline-none"
+                        ref={(el) => {
+                          itemsRef.current[1] = el;
+                        }}
+                        tabIndex={0}
+                      >
+                        Inventory info
+                      </Link>
+                    </div>
+                    <div className="flex flex-col mb-3 text-sm w-full">
+                      <h2 className="mb-1 text-sm font-semibold">
+                        Transactions
+                      </h2>
+                      <Link
+                        to="/accounts/vouchers"
+                        className="focus:bg-[#ABB190] w-full outline-none"
+                        ref={(el) => {
+                          itemsRef.current[2] = el;
+                        }}
+                        tabIndex={0}
+                      >
+                        Accounting vouchers
+                      </Link>
+                      <Link
+                        to="/inventory/inventory-vouchers"
+                        className="focus:bg-[#ABB190] w-full outline-none"
+                        ref={(el) => {
+                          itemsRef.current[3] = el;
+                        }}
+                        tabIndex={0}
+                      >
+                        Inventory vouchers
+                      </Link>
+                    </div>
+                  </div>
+                </TallyWindow>
+              )
             ) : (
               <TallyWindow title="Company Info">
                 <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-5">

@@ -1,12 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
-interface sidebarState {
+export interface sidebarState {
   button: {
     text: string;
     alpha: string;
     alt: boolean;
-    path:string;
+    path?:string;
   }[];
 }
 

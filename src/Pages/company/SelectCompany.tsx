@@ -23,6 +23,11 @@ const SelectCompany = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
+        e.preventDefault();
+        navigate("/");
+        return;
+      }
       if (e.key === "ArrowLeft") {
         navigate(-1);
       }
@@ -48,6 +53,7 @@ const SelectCompany = () => {
   return (
     <div className="h-full pt-14 w-full bg-surface">
       <div className="relative h-full px-4">
+        <h1 className="absolute top-2 right-14 text-muted">Ctrl + M</h1>
         {/* Close button */}
         <button
           type="button"
@@ -116,9 +122,7 @@ const SelectCompany = () => {
               </div>
             ))
           ) : (
-            <div className="py-4 text-center text-sm">
-              No company found.
-            </div>
+            <div className="py-4 text-center text-sm">No company found.</div>
           )}
         </div>
       </div>
