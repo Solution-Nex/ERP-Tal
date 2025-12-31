@@ -83,8 +83,27 @@ const LedgerCreation = () => {
 
     setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      focusFirstError(newErrors);
+      return false;
+    }
+
+    return true;
   };
+  const focusFirstError = (errors: any) => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const firstErrorFieldName = Object.keys(errors)[0];
+    if (!firstErrorFieldName) return;
+
+    const field = form.querySelector(
+      `[name="${firstErrorFieldName}"]`
+    ) as HTMLElement | null;
+
+    field?.focus();
+  };
+
   const handleChange = (e: FormChangeEvent) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -224,7 +243,6 @@ const LedgerCreation = () => {
                   type="text"
                   className="w-full"
                   value={FormData.ledgerName}
-                  error={errors.ledgerName}
                   onChange={handleChange}
                 />
                 <Field
@@ -257,7 +275,6 @@ const LedgerCreation = () => {
                   type="search"
                   label="Under"
                   name="under"
-                  error={errors.under}
                   value={under}
                   autoComplete="off"
                   onFocus={() => {
@@ -309,7 +326,6 @@ const LedgerCreation = () => {
                     <Field
                       label="A/c holder's name"
                       type="text"
-                      error={errors.acholderName}
                       name="acholderName"
                       className="mt-2"
                       value={FormData.acholderName}
@@ -319,7 +335,6 @@ const LedgerCreation = () => {
                       label="A/c no."
                       type="text"
                       name="acNumber"
-                      error={errors.acNumber}
                       value={FormData.acNumber}
                       onChange={handleChange}
                     />
@@ -327,7 +342,6 @@ const LedgerCreation = () => {
                       label="IFS Code"
                       type="text"
                       error={errors.ifsCode}
-                      name="ifsCode"
                       value={FormData.ifsCode}
                       onChange={handleChange}
                     />
@@ -345,7 +359,6 @@ const LedgerCreation = () => {
                       name="bankBranch"
                       value={FormData.bankBranch}
                       onChange={handleChange}
-                      error={errors.bankBranch}
                     />
                     <h3 className="underline font-semibold mt-5">
                       Bank Configuration
@@ -401,7 +414,6 @@ const LedgerCreation = () => {
                   value={FormData.mailName}
                   autoComplete="false"
                   onChange={handleChange}
-                  error={errors.mailName}
                 />
                 <Field
                   label="Address"
@@ -410,7 +422,6 @@ const LedgerCreation = () => {
                   name="mailAddress"
                   value={FormData.mailAddress}
                   onChange={handleChange}
-                  error={errors.mailAddress}
                 />
                 <div className="mt-4">
                   <Select
@@ -418,7 +429,6 @@ const LedgerCreation = () => {
                     options={["Pakistan"]}
                     className="flex justify-between w-full"
                     name="mailCountry"
-                    error={errors.mailCountry}
                     value={FormData.mailCountry}
                     onChange={handleChange}
                   />
@@ -426,7 +436,6 @@ const LedgerCreation = () => {
                 <div className="mt-4">
                   <Select
                     label="State"
-                    error={errors.mailState}
                     options={["Punjab"]}
                     className="flex justify-between w-full"
                     name="mailState"
@@ -437,7 +446,6 @@ const LedgerCreation = () => {
                 <div className="mt-4">
                   <Field
                     label="Pin Code"
-                    error={errors.mailPinCode}
                     type="text"
                     className="flex justify-between w-full"
                     name="mailPinCode"
@@ -464,7 +472,6 @@ const LedgerCreation = () => {
                   type="text"
                   label="PAN/IT NO."
                   name="panItNO"
-                  error={errors.panItNO}
                   onChange={handleChange}
                   autoComplete="false"
                   value={FormData.panItNO}
