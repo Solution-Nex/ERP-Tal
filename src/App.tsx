@@ -3,14 +3,13 @@ import "./index.css";
 // import Home from './Pages/Home';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import LedgerCreation from "./Pages/Ledger/LedgerCreation";
-import SelectLedger from "./Pages/Ledger/SelectLedger";
 const Layout = lazy(() => import("./Components/Layout"));
 const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
 const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
 const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
 const LoginPage = lazy(() => import("./Pages/auth/login"));
-
+const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
+const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
 function App() {
   return (
     <BrowserRouter>
