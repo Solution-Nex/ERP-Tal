@@ -341,7 +341,7 @@ const LedgerCreation = () => {
                     <Field
                       label="IFS Code"
                       type="text"
-                      error={errors.ifsCode}
+                      name="ifsCode"
                       value={FormData.ifsCode}
                       onChange={handleChange}
                     />
