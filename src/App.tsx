@@ -4,6 +4,7 @@ import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import LedgerCreation from "./Pages/Ledger/LedgerCreation";
+import SelectLedger from "./Pages/Ledger/SelectLedger";
 const Layout = lazy(() => import("./Components/Layout"));
 const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
 const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
@@ -20,6 +21,7 @@ function App() {
           <Route path="/select-company" element={<SelectCompany />}></Route>
           <Route path="/create-company" element={<Compneycreation />}></Route>
           <Route path="ledger-creation" element={<LedgerCreation />} />
+          <Route path="ledger-selection" element={<SelectLedger />} />
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
       </Routes>

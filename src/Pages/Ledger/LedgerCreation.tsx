@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import Select from "../../Components/Select";
 import Field from "../../Components/Field";
+import CalclulatorArea from "../../Components/CalclulatorArea";
+import type { FormChangeEvent, FormDataType } from "./Types";
 
 const LedgerCreation = () => {
   const navigate = useNavigate();
@@ -13,6 +15,80 @@ const LedgerCreation = () => {
   const [showGroupList, setGroupList] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof FormDataType | "under", string>>
+  >({});
+  const [FormData, setFormData] = useState<FormDataType>({
+    ledgerName: "",
+    ledgerAlias: "",
+    toB: "200 $",
+    acholderName: "",
+    acNumber: "",
+    ifsCode: "",
+    bankName: "Not Applicable",
+    bankBranch: "",
+    checkBooks: "No",
+    checkPrintConfig: "No",
+    inventoryValue: "No",
+    ledgerType: "Not Applicable",
+    mailName: "",
+    mailAddress: "",
+    mailCountry: "Pakistan",
+    mailState: "Punjab",
+    mailPinCode: "",
+    mailBankDetails: "No",
+    panItNO: "",
+  });
+
+  const Validate = (): boolean => {
+    const newErrors: typeof errors = {};
+
+    if (!FormData.ledgerName.trim()) {
+      newErrors.ledgerName = "Ledger Name is Required";
+    }
+    if (!under.trim()) {
+      newErrors.under = "Please Select Group";
+    }
+    if (!FormData.mailName.trim()) {
+      newErrors.mailName = "Mailing Name is required";
+    }
+    if (!FormData.mailAddress.trim()) {
+      newErrors.mailAddress = "Mail address Is required";
+    }
+    if (!FormData.mailState.trim()) {
+      newErrors.mailState = "Mail State Is required";
+    }
+    if (!FormData.mailPinCode.trim()) {
+      newErrors.mailPinCode = "Pin Code Is required";
+    }
+    if (!FormData.panItNO.trim()) {
+      newErrors.panItNO = "PAN/IT/NO Is required";
+    }
+
+    if (under === "Bank Accounts") {
+      if (!FormData.acholderName.trim()) {
+        newErrors.acholderName = "Account Name is Required";
+      }
+      if (!FormData.bankBranch.trim()) {
+        newErrors.bankBranch = "Bank branch is required";
+      }
+      if (!FormData.acNumber.trim()) {
+        newErrors.acNumber = "Account Number is required";
+      }
+
+      if (!FormData.ifsCode.trim()) {
+        newErrors.ifsCode = "IFS Code is required";
+      }
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+  const handleChange = (e: FormChangeEvent) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const GroupList = [
     "Bank Accounts",
@@ -46,10 +122,19 @@ const LedgerCreation = () => {
     focusable[next].focus();
   };
 
-  const handleFinalSubmit = () => {
-    console.log("Form Submitted Successfully");
+  const handleFinalSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    if (!Validate()) return;
+    console.log("Final Data:", { ...FormData, under });
+
     setConfirmOpen(false);
     navigate("/");
+  };
+
+  const handleAskConfirm = () => {
+    if (!Validate()) return;
+    setConfirmOpen(true);
   };
 
   useEffect(() => {
@@ -89,14 +174,16 @@ const LedgerCreation = () => {
       // Enter Key Logic
       if (e.key === "Enter") {
         const active = document.activeElement as HTMLElement | null;
-
+        handleAskConfirm();
         if (showGroupList && activeIndex >= 0) {
           return;
         }
 
         if (active?.tagName !== "TEXTAREA") {
           e.preventDefault();
+
           previouslyFocused.current = active;
+
           setConfirmOpen(true);
         }
       }
@@ -107,7 +194,7 @@ const LedgerCreation = () => {
   }, [confirmOpen, showGroupList, activeIndex, navigate]);
 
   return (
-    <div className="min-h-screen h-screen flex flex-col w-full relative">
+    <div className="min-h-screen h-screen flex flex-col w-full ">
       <div className="w-full pt-10 px-4 flex items-center justify-between bg-gray-300">
         <div>
           <h1 className="capitalize text-black text-md font-semibold">
@@ -126,17 +213,28 @@ const LedgerCreation = () => {
         </div>
       </div>
 
-      <div className="w-full pl-5 flex justify-between flex-1 h-full overflow-hidden">
+      <div className="w-full pl-5 flex justify-between flex-1 h-full overflow-hidden ">
         <div className="py-3 w-full h-full ">
-          <form
-            ref={formRef}
-            onSubmit={(e) => e.preventDefault()}
-            className="h-full"
-          >
+          <form ref={formRef} onSubmit={handleFinalSubmit} className="h-full">
             <div className="flex justify-between">
               <div className="flex flex-col gap-3">
-                <Field label="Name" type="text" className="w-full" />
-                <Field label="Alias" type="text" className="w-full" />
+                <Field
+                  label="Name"
+                  name="ledgerName"
+                  type="text"
+                  className="w-full"
+                  value={FormData.ledgerName}
+                  error={errors.ledgerName}
+                  onChange={handleChange}
+                />
+                <Field
+                  label="Alias"
+                  name="ledgerAlias"
+                  type="text"
+                  className="w-full"
+                  value={FormData.ledgerAlias}
+                  onChange={handleChange}
+                />
               </div>
               <div className="flex flex-col items-center justify-center border-gray-400 border px-4">
                 <label className="underline text-sm">
@@ -144,26 +242,37 @@ const LedgerCreation = () => {
                 </label>
                 <input
                   type="text"
-                  value={"200.00$"}
+                  value={FormData.toB}
+                  onChange={handleChange}
+                  name="toB"
                   readOnly
                   className="bg-transparent text-center h-20 text-xl outline-none"
                 />
               </div>
             </div>
 
-            <div className="w-full flex border-gray-400 border-t py-5 h-full">
-              <div className="w-full border-gray-400 border-r px-4 ">
+            <div className="w-full flex border-gray-400 border-t  h-full">
+              <div className="w-full border-gray-400 border-r px-4 py-5">
                 <Field
                   type="search"
                   label="Under"
                   name="under"
+                  error={errors.under}
                   value={under}
+                  autoComplete="off"
                   onFocus={() => {
                     setGroupList(true);
                     setActiveIndex(-1);
                   }}
+                  onBlur={() => {
+                    setGroupList(false);
+                  }}
                   onChange={(e) => {
                     setunder(e.target.value);
+                    if (e.target.value === "") {
+                      setGroupList(true);
+                    }
+
                     setActiveIndex(-1);
                   }}
                   onKeyDown={(e) => {
@@ -191,24 +300,149 @@ const LedgerCreation = () => {
                     }
                   }}
                 />
-                <Select
-                  label="Inventory values are affected"
-                  options={["No", "Yes"]}
-                  className="items-start w-full justify-start mt-4"
-                />
+
+                {under === "Bank Accounts" ? (
+                  <div className="mt-10">
+                    <h3 className="underline font-semibold ">
+                      Bank Account Details
+                    </h3>
+                    <Field
+                      label="A/c holder's name"
+                      type="text"
+                      error={errors.acholderName}
+                      name="acholderName"
+                      className="mt-2"
+                      value={FormData.acholderName}
+                      onChange={handleChange}
+                    />
+                    <Field
+                      label="A/c no."
+                      type="text"
+                      name="acNumber"
+                      error={errors.acNumber}
+                      value={FormData.acNumber}
+                      onChange={handleChange}
+                    />
+                    <Field
+                      label="IFS Code"
+                      type="text"
+                      error={errors.ifsCode}
+                      name="ifsCode"
+                      value={FormData.ifsCode}
+                      onChange={handleChange}
+                    />
+
+                    <Select
+                      label="Bank Name"
+                      options={["Not Applicable", "HBL", "NBP"]}
+                      name="bankName"
+                      value={FormData.bankName}
+                      onChange={handleChange}
+                    />
+                    <Field
+                      label="Branch"
+                      type="text"
+                      name="bankBranch"
+                      value={FormData.bankBranch}
+                      onChange={handleChange}
+                      error={errors.bankBranch}
+                    />
+                    <h3 className="underline font-semibold mt-5">
+                      Bank Configuration
+                    </h3>
+                    <Select
+                      className="mt-2"
+                      label="Set cheque books ?"
+                      options={["No"]}
+                      name="checkBooks"
+                      value={FormData.checkBooks}
+                      onChange={handleChange}
+                    />
+                    <Select
+                      className="mt-2"
+                      label="Set cheque printing configuration ?"
+                      options={["No"]}
+                      name="checkPrintConfig"
+                      value={FormData.checkPrintConfig}
+                      onChange={handleChange}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {" "}
+                    <Select
+                      label="Inventory values are affected ?"
+                      options={["No", "Yes"]}
+                      className="w-full mt-2"
+                      name="inventoryValue"
+                      value={FormData.inventoryValue}
+                      onChange={handleChange}
+                    />
+                    <Select
+                      label="Ledger Type ?"
+                      options={["Not Applicable", "Invoice Rounding"]}
+                      className="w-full mt-2"
+                      name="ledgerType"
+                      value={FormData.ledgerType}
+                      onChange={handleChange}
+                    />
+                  </>
+                )}
               </div>
 
-              <div className="w-full px-4 py-2">
+              <div className="w-full px-4 py-5">
                 <h2 className="text-center mb-5 font-semibold">
                   Mailing details
                 </h2>
-                <Field label="Name" type="text" />
-                <Field label="Address" type="text" />
+                <Field
+                  label="Name"
+                  type="text"
+                  name="mailName"
+                  value={FormData.mailName}
+                  autoComplete="false"
+                  onChange={handleChange}
+                  error={errors.mailName}
+                />
+                <Field
+                  label="Address"
+                  type="text"
+                  autoComplete="false"
+                  name="mailAddress"
+                  value={FormData.mailAddress}
+                  onChange={handleChange}
+                  error={errors.mailAddress}
+                />
                 <div className="mt-4">
                   <Select
                     label="Country"
                     options={["Pakistan"]}
                     className="flex justify-between w-full"
+                    name="mailCountry"
+                    error={errors.mailCountry}
+                    value={FormData.mailCountry}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="mt-4">
+                  <Select
+                    label="State"
+                    error={errors.mailState}
+                    options={["Punjab"]}
+                    className="flex justify-between w-full"
+                    name="mailState"
+                    onChange={handleChange}
+                    value={FormData.mailState}
+                  />
+                </div>
+                <div className="mt-4">
+                  <Field
+                    label="Pin Code"
+                    error={errors.mailPinCode}
+                    type="text"
+                    className="flex justify-between w-full"
+                    name="mailPinCode"
+                    value={FormData.mailPinCode}
+                    onChange={handleChange}
                   />
                 </div>
                 <div className="w-full mt-4">
@@ -216,6 +450,9 @@ const LedgerCreation = () => {
                     label="Provide bank Details"
                     options={["No", "Yes"]}
                     className="items-start w-full"
+                    name="mailBankDetails"
+                    onChange={handleChange}
+                    value={FormData.mailBankDetails}
                   />
                 </div>
                 <div className="w-full text-center mt-8 mb-4">
@@ -223,14 +460,22 @@ const LedgerCreation = () => {
                     Tax Registration Details
                   </h2>
                 </div>
-                <Field type="text" label="PAN/IT NO." />
+                <Field
+                  type="text"
+                  label="PAN/IT NO."
+                  name="panItNO"
+                  error={errors.panItNO}
+                  onChange={handleChange}
+                  autoComplete="false"
+                  value={FormData.panItNO}
+                />
               </div>
             </div>
           </form>
         </div>
 
         {showGroupList && (
-          <div className="w-full max-w-sm bg-[#C5C6C7] border border-gray-500 h-full overflow-y-auto">
+          <div className="w-full max-w-sm bg-[#C5C6C7] border border-gray-500 h-full overflow-y-auto fixed top-10 right-5">
             <h2 className="text-center font-serif text-white text-xl py-1 bg-[#176EE8] w-full">
               List of Groups
             </h2>
@@ -244,7 +489,8 @@ const LedgerCreation = () => {
                       : "hover:bg-gray-400"
                   }`}
                   onMouseEnter={() => setActiveIndex(index)}
-                  onClick={() => {
+                  onMouseDown={(e) => {
+                    e.preventDefault();
                     setunder(item);
                     setGroupList(false);
                   }}
@@ -282,6 +528,9 @@ const LedgerCreation = () => {
           </div>
         </div>
       )}
+      <div>
+        <CalclulatorArea />
+      </div>
     </div>
   );
 };
