@@ -6,6 +6,7 @@ export interface sidebarState {
     alpha: string;
     alt: boolean;
     path?:string;
+    onClick?: ()=> void;
   }[];
 }
 

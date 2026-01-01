@@ -146,12 +146,17 @@ const CompanyCreation = () => {
 
   /* ================= KEYBOARD HANDLING ================= */
   useEffect(() => {
-    document.title = "Create New Company - SN ERP";
+    document.title = isEditing
+      ? "Alter Company Details - SN ERP"
+      : "Create New Company - SN ERP";
 
     const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        dispatch(setEditing(false));
+        setIsDeleting(false);
+        navigate(-1);
+      }
       const active = document.activeElement as HTMLElement | null;
-      const tag = active?.tagName;
-      const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 
       if (confirmOpen) {
         if (e.key === "Escape") {
@@ -189,27 +194,25 @@ const CompanyCreation = () => {
         return;
       }
 
-      if (!isInput) {
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          moveFocus(1);
-        }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        moveFocus(1);
+      }
 
-        if (e.key === "ArrowUp") {
-          e.preventDefault();
-          moveFocus(-1);
-        }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        moveFocus(-1);
+      }
 
-        if (e.key === "Enter" && tag !== "BUTTON") {
-          e.preventDefault();
-          previouslyFocused.current = active;
-          setConfirmOpen(true);
-        }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        previouslyFocused.current = active;
+        setConfirmOpen(true);
       }
     };
 
-    document.addEventListener("keydown", handleKey, true);
-    return () => document.removeEventListener("keydown", handleKey, true);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [confirmOpen, isEditing, navigate]);
 
   useEffect(() => {
@@ -218,7 +221,6 @@ const CompanyCreation = () => {
 
   const currencySymbols = ["₹", "$", "£", "€", "R$", "¥", "₨"];
 
-  /* ================= UI ================= */
   return (
     <>
       <div className="w-full pt-10 flex items-center px-4 justify-between bg-gray-300">

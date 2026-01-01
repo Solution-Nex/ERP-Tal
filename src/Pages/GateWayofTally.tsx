@@ -43,7 +43,6 @@ const GateWayofTally: FC = () => {
       }
 
       if (e.altKey && e.key === "F1") {
-        console.log("Hello alt+F1");
         e.preventDefault();
         dispatch(setSelectedCompany(null));
         console.log("after alt+F1 selectedCompany", selectedCompany);
@@ -92,12 +91,14 @@ const GateWayofTally: FC = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeIndex, navigate, dispatch]);
 
+  const openCompanyInfo = (): void => setInfoMenu(true);
+
   const functionKeys = [
-    { alpha: "F1", text: "Select Comp", alt: false, path: "/select-company" },
+    { alpha: "F1", text: "Select Comp", alt: false, path: "/select-company" }, //go to select company
     { alpha: "F1", text: "Shut Comp", alt: true }, //close company
     { alpha: "F2", text: "data", alt: false },
     { alpha: "F2", text: "Period", alt: true },
-    { alpha: "F3", text: "Cmp Info", alt: true }, // change Gateway of tally opyions
+    { alpha: "F3", text: "Cmp Info", alt: true, onClick: openCompanyInfo }, // change Gateway of tally options to company info
     { alpha: "F4", text: "Connent", alt: false },
     { alpha: "F11", text: "Features", alt: false },
     { alpha: "F12", text: "Configure", alt: false },
@@ -358,7 +359,6 @@ const GateWayofTally: FC = () => {
       </div>
       <div>
         <CalclulatorArea />
-        {/* <Sidebar button={functionKeys}></Sidebar> */}
       </div>
     </div>
   );
