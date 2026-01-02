@@ -7,7 +7,7 @@ const Layout = lazy(() => import("./Components/Layout"));
 const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
 const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
 const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
-const LoginPage = lazy(() => import("./Pages/auth/login"));
+const LoginPage = lazy(() => import("./Pages/auth/Login"));
 const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
 const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
 function App() {
