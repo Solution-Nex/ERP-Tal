@@ -56,3 +56,11 @@ body {
 
 /* small helpers for smooth theme switch */
 .transition-colors { transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease; }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

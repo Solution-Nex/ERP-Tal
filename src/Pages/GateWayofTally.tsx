@@ -181,6 +181,18 @@ const GateWayofTally: FC = () => {
               >
                 <span className="text-green-900">Q</span>uit
               </button>
+
+ {/*group  remove it when after select company gatwayof Telly  amd Accountinfo is create it is only for testing to go toward group page  */}
+              <Link
+                to="/groups"
+                className="focus:bg-[#ABB190] w-full outline-none"
+                ref={(el) => {
+                  itemsRef.current[6] = el;
+                }}
+                tabIndex={0}
+              >
+                <span className="text-green-900">G</span>roups
+              </Link>
             </div>
           </div>
         </div>
