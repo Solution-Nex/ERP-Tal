@@ -1,31 +1,37 @@
+
 import { lazy } from 'react';
 import './index.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-const Layout = lazy(()=> import('./Components/layout/Layout'));
-const GateWayofTally = lazy(()=> import("./Pages/GateWayofTally"))
-const SelectCompany = lazy(()=> import("./Pages/company/SelectCompany"))
-const Compneycreation = lazy(()=> import("./Pages/company/Compneycreation"))
-const Login = lazy(()=> import("./Pages/auth/Login"))
-const VoucherList = lazy(()=> import("./Pages/vouchers/VoucherList"))
-const VoucherForm = lazy(()=> import("./Pages/vouchers/VoucherForm"))
-const NotFound = lazy(()=> import("./Pages/NotFound"))
 
+// import Home from './Pages/Home';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+
+const Layout = lazy(() => import("./Components/layout/Layout"));
+const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
+const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
+const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
+const LoginPage = lazy(() => import("./Pages/auth/Login"));
+const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
+const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
 function App() {
   return (
     <BrowserRouter>
+
+      {/* <Suspense fallback={<div>Loading...</div>}> */}
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<GateWayofTally />} />
-          <Route path="/select-company" element={<SelectCompany />} />
-          <Route path="/create-company" element={<Compneycreation />} />
-          <Route path="/accounts/vouchers" element={<VoucherList />} />
-          <Route path="/vouchers/new" element={<VoucherForm />} />
+          <Route index element={<GateWayofTally />}></Route>
+          <Route path="/select-company" element={<SelectCompany />}></Route>
+          <Route path="/create-company" element={<Compneycreation />}></Route>
+          <Route path="ledger-creation" element={<LedgerCreation />} />
+          <Route path="ledger-selection" element={<SelectLedger />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path='*' element={<NotFound />} />
+        <Route path="/login" element={<LoginPage />}></Route>
       </Routes>
+      {/* </Suspense> */}
+
     </BrowserRouter>
   );
 }
 
-export default App
+export default App;
