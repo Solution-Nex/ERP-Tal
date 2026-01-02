@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { useEffect, useState } from "react";
-import CalclulatorArea from "../../Components/CalclulatorArea";
+import CalclulatorArea from "../../Components/common/CalclulatorArea";
 
 const SelectLedger = () => {
   const navigate = useNavigate();

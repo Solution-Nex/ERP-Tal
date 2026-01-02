@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
-import Select from "../../Components/Select";
-import Field from "../../Components/Field";
-import CalclulatorArea from "../../Components/CalclulatorArea";
 import type { FormChangeEvent, FormDataType } from "./Types";
+import Select from "../../Components/common/Select";
+import Field from "../../Components/common/Field";
+import CalclulatorArea from "../../Components/common/CalclulatorArea";
 
 const LedgerCreation = () => {
   const navigate = useNavigate();
@@ -535,9 +535,9 @@ const LedgerCreation = () => {
           </div>
         </div>
       )}
-      <div>
+      {/* <div>
         <CalclulatorArea />
-      </div>
+      </div> */}
     </div>
   );
 };
