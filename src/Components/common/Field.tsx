@@ -19,29 +19,28 @@ const Field = forwardRef<HTMLInputElement, FieldProps>(
           {rest.required && <span className="text-red-500">*</span>}
         </label>
         <span className="text-xl">:</span>
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-row items-center justify-start">
           <input
             {...rest}
             ref={ref}
             type={isPassword ? (viewPassword ? "text" : "password") : type}
             aria-invalid={!!error}
-            className={`bg-gray-300 focus:bg-black max-w-52 focus:text-white outline-none transition-colors text-[var(--text)] w-full ${
+            className={`bg-gray-300 mr-5 focus:bg-black max-w-52 focus:text-white outline-none transition-colors text-[var(--text)] w-full ${
               error
                 ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-100"
                 : "border-muted focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
             } ${className ?? ""}`}
           />
-
-          {isPassword && rest.value && (
+          
+          {isPassword &&(
             <button
               type="button"
               onClick={() => setViewPassword(!viewPassword)}
-              className="mt-2 text-sm text-blue-500 hover:underline"
+              className="text-sm text-blue-500 hover:underline"
             >
               {viewPassword ? "Hide" : "Show"}
             </button>
           )}
-          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
       </div>
     );

@@ -25,6 +25,7 @@ interface CompanyState {
   companies: CompanyFromBackend[];
   selectedCompany: CompanyFromBackend | null;
   companiesFetched: boolean;
+  isEditing: boolean;
   loading: boolean;
   error: string | null;
 }
@@ -36,6 +37,7 @@ const initialState: CompanyState = {
   ],
   selectedCompany: null,
   companiesFetched: false,
+  isEditing: false,
   loading: false,
   error: null,
 };
@@ -93,6 +95,8 @@ export const deleteCompany = createAsyncThunk<
     return rejectWithValue(extractErrorMessage(err, "Failed to delete company"));
   }
 });
+
+
 const companySlice = createSlice({
   name: "company",
   initialState,
@@ -105,9 +109,13 @@ const companySlice = createSlice({
       state.error = null;
     },
     setSelectedCompany: (state, action: PayloadAction<CompanyFromBackend | null>) => {
+      console.log("in the slice",action.payload)
       const company = action.payload;
       state.selectedCompany = company === null ? null : state.companies.find((c) => c._id === company._id) ?? null;
     },
+    setEditing: (state, action: PayloadAction<boolean>)=>{
+      state.isEditing = action.payload;
+    }
   },
   extraReducers: (builder) => {
     // FETCH
@@ -158,6 +166,7 @@ const companySlice = createSlice({
         updateCompany.fulfilled,
         (state, action: PayloadAction<CompanyFromBackend>) => {
           state.loading = false;
+          state.isEditing = false;
           const updated = action.payload;
           const index = state.companies.findIndex((c) => c._id === updated._id);
           if (index !== -1) {
@@ -169,6 +178,7 @@ const companySlice = createSlice({
         }
       )
       .addCase(updateCompany.rejected, (state, action) => {
+        state.isEditing = false;
         state.loading = false;
         state.error = action.payload || action.error.message || null;
       });
@@ -197,7 +207,7 @@ const companySlice = createSlice({
   },
 });
 
-export const { resetCompaniesState, setSelectedCompany } = companySlice.actions;
+export const { resetCompaniesState, setSelectedCompany, setEditing } = companySlice.actions;
 
 // Selectors
 // export const selectCompanies = (state: RootState) => state.company.companies;

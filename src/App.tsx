@@ -1,18 +1,22 @@
-import { lazy } from "react";
-import "./index.css";
+
+import { lazy } from 'react';
+import './index.css'
+
 // import Home from './Pages/Home';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-const Layout = lazy(() => import("./Components/Layout"));
+
+const Layout = lazy(() => import("./Components/layout/Layout"));
 const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
 const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
 const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
-const LoginPage = lazy(() => import("./Pages/auth/login"));
+const LoginPage = lazy(() => import("./Pages/auth/Login"));
 const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
 const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
 function App() {
   return (
     <BrowserRouter>
+
       {/* <Suspense fallback={<div>Loading...</div>}> */}
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -25,6 +29,7 @@ function App() {
         <Route path="/login" element={<LoginPage />}></Route>
       </Routes>
       {/* </Suspense> */}
+
     </BrowserRouter>
   );
 }
