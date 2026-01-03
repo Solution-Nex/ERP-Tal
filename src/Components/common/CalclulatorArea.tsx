@@ -1,7 +1,7 @@
 const CalclulatorArea = () => {
   return (
-    <div>
-      <div className="w-full flex bg-surface items-stretch ">
+    <div className="text-sm">
+      <div className="w-full flex bg-surface items-stretch  ">
         <div className="w-full flex justify-center border-r border-gray-700 flex-col">
           {" "}
           <h3 className="bg-[#3b6bef] text-white w-full px-2">Product</h3>

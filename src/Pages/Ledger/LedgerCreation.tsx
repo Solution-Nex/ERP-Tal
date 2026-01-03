@@ -4,7 +4,6 @@ import { AiTwotoneCloseSquare } from "react-icons/ai";
 import type { FormChangeEvent, FormDataType } from "./Types";
 import Select from "../../Components/common/Select";
 import Field from "../../Components/common/Field";
-import CalclulatorArea from "../../Components/common/CalclulatorArea";
 
 const LedgerCreation = () => {
   const navigate = useNavigate();
@@ -90,6 +89,7 @@ const LedgerCreation = () => {
 
     return true;
   };
+
   const focusFirstError = (errors: any) => {
     const form = formRef.current;
     if (!form) return;
@@ -236,7 +236,7 @@ const LedgerCreation = () => {
         <div className="py-3 w-full h-full ">
           <form ref={formRef} onSubmit={handleFinalSubmit} className="h-full">
             <div className="flex justify-between">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col">
                 <Field
                   label="Name"
                   name="ledgerName"
@@ -269,8 +269,8 @@ const LedgerCreation = () => {
               </div>
             </div>
 
-            <div className="w-full flex border-gray-400 border-t  h-full">
-              <div className="w-full border-gray-400 border-r px-4 py-5">
+            <div className="w-full flex border-gray-400 border-t h-full">
+              <div className="w-full border-gray-400 border-r">
                 <Field
                   type="search"
                   label="Under"
@@ -403,8 +403,8 @@ const LedgerCreation = () => {
                 )}
               </div>
 
-              <div className="w-full px-4 py-5">
-                <h2 className="text-center mb-5 font-semibold">
+              <div className="w-full ml-3">
+                <h2 className="text-center mb-4 font-sm">
                   Mailing details
                 </h2>
                 <Field
@@ -423,7 +423,7 @@ const LedgerCreation = () => {
                   value={FormData.mailAddress}
                   onChange={handleChange}
                 />
-                <div className="mt-4">
+                <div>
                   <Select
                     label="Country"
                     options={["Pakistan"]}
@@ -433,7 +433,7 @@ const LedgerCreation = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <div className="mt-4">
+                <div>
                   <Select
                     label="State"
                     options={["Punjab"]}
@@ -443,7 +443,7 @@ const LedgerCreation = () => {
                     value={FormData.mailState}
                   />
                 </div>
-                <div className="mt-4">
+                <div>
                   <Field
                     label="Pin Code"
                     type="text"
@@ -453,7 +453,7 @@ const LedgerCreation = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <div className="w-full mt-4">
+                <div className="w-full">
                   <Select
                     label="Provide bank Details"
                     options={["No", "Yes"]}
@@ -463,7 +463,7 @@ const LedgerCreation = () => {
                     value={FormData.mailBankDetails}
                   />
                 </div>
-                <div className="w-full text-center mt-8 mb-4">
+                <div className="w-full text-center my-4">
                   <h2 className="underline font-semibold">
                     Tax Registration Details
                   </h2>
@@ -535,9 +535,6 @@ const LedgerCreation = () => {
           </div>
         </div>
       )}
-      {/* <div>
-        <CalclulatorArea />
-      </div> */}
     </div>
   );
 };
