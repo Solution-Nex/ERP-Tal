@@ -11,7 +11,7 @@ export const companyFormSchema = z.object({
   phone: z.string().min(1, " "),
   mobile: z.string().min(1, " "),
   fax: z.string().optional(),
-  email: z.string().email(" "),
+  email: z.email(" "),
   website: z.string().optional(),
   financialYearBeginsFrom: z.string().min(1, " "),
   booksBeginningFrom: z.string().min(1, " "),

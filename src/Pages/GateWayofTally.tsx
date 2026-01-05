@@ -1,10 +1,23 @@
 import { useEffect, useRef, useState, type FC } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CalclulatorArea from "../Components/common/CalclulatorArea";
+import TallyWindow from "../Components/common/TallyWindow";
+import { useAppSelector } from "../store/store";
+import { setSidebarButtons } from "./sidebarSlice";
+import { useAppDispatch } from "../store/store";
+import { setEditing, setSelectedCompany } from "./company/slice";
+import type { MenuState, MenuItem } from "./menuConfig";
+import { menuTitles, createMenuItems } from "./menuConfig";
+
 const GateWayofTally: FC = () => {
-  const navigate = useNavigate()
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [period, setPeriod] = useState<string>("");
   const [date, setDate] = useState<string>("");
+  const [menuState, setMenuState] = useState<MenuState>("gateway");
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const itemsRef = useRef<Map<string, HTMLElement | null>>(new Map());
+  const { selectedCompany } = useAppSelector((state) => state.company);
 
   useEffect(() => {
     document.title = "Gateway of Tally - SN ERP";
@@ -19,39 +32,187 @@ const GateWayofTally: FC = () => {
     );
     setDate(now.toLocaleDateString());
   }, []);
-  const itemsRef = useRef<(HTMLElement | null)[]>([]);
 
-  const [activeIndex, setActiveIndex] = useState(0);
   useEffect(() => {
-    itemsRef.current[activeIndex]?.focus();
+    const items = Array.from(itemsRef.current.values());
+    items[activeIndex]?.focus();
   }, [activeIndex]);
+
+  // Select Company
+  const handleSelectCompany = () => navigate("/select-company");
+
+  // Shut Company
+  const handleShutCompany = () => {
+    dispatch(setSelectedCompany(null));
+    navigate("/");
+  };
+
+  // Alter Company
+  const handleAlterCompany = () => {
+    dispatch(setEditing(true));
+    navigate("/create-company");
+  };
+
+  // Handle Menu Action
+  const handleMenuAction = (action: MenuState | (() => void)) => {
+    if (typeof action === "function") {
+      action();
+    } else {
+      setMenuState(action);
+      setActiveIndex(0);
+      itemsRef.current.clear();
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        navigate(-1);
+      // F1 - Select Company
+      if (e.key === "F1" && !e.altKey) {
+        e.preventDefault();
+        handleSelectCompany();
+        return;
       }
-      if (e.key === "ArrowRight") {
-        navigate(+1);
+
+      // Alt+F1 - Shut Company
+      if (e.altKey && e.key === "F1") {
+        e.preventDefault();
+        handleShutCompany();
+        return;
       }
+
+      // Alt+F3 - Company Info
+      if (e.altKey && e.key === "F3") {
+        e.preventDefault();
+        if (selectedCompany) {
+          handleMenuAction("info");
+        }
+        return;
+      }
+
+      // Arrow navigation
+      const items = Array.from(itemsRef.current.values());
+      const itemCount = items.length;
+
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setActiveIndex((prev) =>
-          prev < itemsRef.current.length - 1 ? prev + 1 : 0
-        );
+        setActiveIndex((prev) => (prev < itemCount - 1 ? prev + 1 : 0));
+        return;
       }
 
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        setActiveIndex((prev) =>
-          prev > 0 ? prev - 1 : itemsRef.current.length - 1
-        );
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : itemCount - 1));
+        return;
+      }
+
+      // Enter - Click active item
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const active = items[activeIndex];
+        active?.click();
+        return;
+      }
+
+      // Escape - Go back
+      if (e.key === "Escape") {
+        e.preventDefault();
+        if (menuState === "ledgers") {
+          handleMenuAction("accounts");
+        } else if (menuState === "accounts" || menuState === "info") {
+          handleMenuAction("gateway");
+        }
+        return;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [activeIndex, menuState, selectedCompany, dispatch]);
+
+  const openCompanyInfo = (): void => handleMenuAction("info");
+
+  useEffect(() => {
+    const functionKeys = [
+      { alpha: "F1", text: "Select Comp", alt: false, path: "/select-company" },
+      { alpha: "F1", text: "Shut Comp", alt: true },
+      { alpha: "F3", text: "Cmp Info", alt: true, onClick: openCompanyInfo },
+    ];
+
+    if (selectedCompany && functionKeys.length > 0) {
+      dispatch(setSidebarButtons(functionKeys));
+    }
+    return () => {
+      dispatch(setSidebarButtons([]));
+    };
+  }, [selectedCompany, dispatch]);
+
+  // Create menu items based on dependencies
+  const menuItems = createMenuItems(
+    selectedCompany,
+    handleMenuAction,
+    handleShutCompany,
+    handleAlterCompany
+  );
+
+  const currentMenuItems = menuItems[menuState];
+
+  const renderMenuItems = (items: MenuItem[]) => {
+    return items.map((item, index) => {
+      const isLink = item.path && !item.onClick;
+      const isMasterItem = menuState === "gateway" && ["accounts-info", "inventory-info"].includes(item.id);
+      const isTransactionItem = menuState === "gateway" && ["accounting-vouchers", "inventory-vouchers"].includes(item.id);
+
+      return (
+        <div className="w-full" key={item.id}>
+          {isMasterItem && index === 0 && (
+            <h2 className="mb-2 text-sm font-bold">
+              Masters
+            </h2>
+          )}
+          {isTransactionItem && index === 2 && (
+            <h2 className="mb-2 text-sm font-bold">
+              Transactions
+            </h2>
+          )}
+          {isLink ? (
+            <a
+              href={item.path}
+              className="focus:bg-[#ABB190] w-full outline-none block cursor-pointer"
+              ref={(el) => {
+                if (el) itemsRef.current.set(item.id, el);
+              }}
+              tabIndex={0}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(item.path || "/");
+              }}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <button
+              onClick={() => item.onClick?.()}
+              className="focus:bg-[#ABB190] text-start w-full outline-none"
+              ref={(el) => {
+                if (el) itemsRef.current.set(item.id, el);
+              }}
+              tabIndex={0}
+            >
+              {item.shortcutKey ? (
+                <>
+                  <span className="text-green-900">{item.shortcutKey}</span>
+                  {item.label.slice(1)}
+                </>
+              ) : (
+                item.label
+              )}
+            </button>
+          )}
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Main content */}
@@ -104,7 +265,11 @@ const GateWayofTally: FC = () => {
 
               <tbody>
                 <tr className="border-b">
-                  <td className="px-4 py-2">Shahzain Traders</td>
+                  <td className="px-4 py-2">
+                    {selectedCompany
+                      ? selectedCompany.name
+                      : "No selected Company"}
+                  </td>
                   <td className="px-4 py-2">20-Dec-2025</td>
                 </tr>
               </tbody>
@@ -112,88 +277,14 @@ const GateWayofTally: FC = () => {
           </div>
         </div>
         {/* RIGHT PANEL */}
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="bg-[#c5c6c7] flex flex-col items-start gap-3 w-full max-w-sm mt-20">
-            <h2 className="text-white bg-[#176ee8] text-center w-full">
-              Company Info
-            </h2>
-
-            <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-5">
-              <Link
-                to="/select-company"
-                className="focus:bg-[#ABB190] w-full outline-none"
-                ref={(el) => {
-                  itemsRef.current[0] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-red-600">S</span>elect Company
-              </Link>
-
-              <Link
-                to="/login"
-                className="focus:bg-[#ABB190] w-full outline-none"
-                ref={(el) => {
-                  itemsRef.current[1] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-green-900">L</span>ogin as Remote User
-              </Link>
-
-              <Link
-                to="/create-company"
-                className="focus:bg-[#ABB190] w-full outline-none"
-                ref={(el) => {
-                  itemsRef.current[2] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-green-900">C</span>reate Company
-              </Link>
-
-              <button
-                className="focus:bg-[#ABB190] w-full outline-none text-left"
-                ref={(el) => {
-                  itemsRef.current[3] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-green-900">B</span>ackup
-              </button>
-
-              <button
-                className="focus:bg-[#ABB190] w-full outline-none text-left"
-                ref={(el) => {
-                  itemsRef.current[4] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-green-900">R</span>estore
-              </button>
-
-              <button
-                className="focus:bg-[#ABB190] w-full outline-none text-left"
-                ref={(el) => {
-                  itemsRef.current[5] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-green-900">Q</span>uit
-              </button>
-
- {/*group  remove it when after select company gatwayof Telly  amd Accountinfo is create it is only for testing to go toward group page  */}
-              <Link
-                to="/groups"
-                className="focus:bg-[#ABB190] w-full outline-none"
-                ref={(el) => {
-                  itemsRef.current[6] = el;
-                }}
-                tabIndex={0}
-              >
-                <span className="text-green-900">G</span>roups
-              </Link>
-            </div>
+        <div className="w-full h-full my-auto flex justify-center">
+          <div className="bg-[#c5c6c7] flex flex-col items-start gap-3 w-full max-w-sm">
+            <TallyWindow title={menuTitles[menuState]}>
+              <div className="flex flex-col gap-3 px-6 pl-8 items-start w-full py-6">
+                {renderMenuItems(currentMenuItems)}
+              </div>
+            </TallyWindow>
+        
           </div>
         </div>
       </div>

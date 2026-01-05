@@ -12,11 +12,14 @@ const Grouplists = lazy(()=> import("./Components/common/Groupslist"))
 
 const Login = lazy(() => import("./Pages/auth/Login"))
 
+
 function App() {
   return (
     <BrowserRouter>
+      {/* <Suspense fallback={<div>Loading...</div>}> */}
       <Routes>
         <Route path="/" element={<Layout />}>
+
           <Route index element={<GateWayofTally />} />
           <Route path="/select-company" element={<SelectCompany />} />
           <Route path="/create-company" element={<Compneycreation />} />
@@ -24,11 +27,14 @@ function App() {
           <Route path='/create-single-group' element={<Singlegroupcreation />} />
           <Route path='/create-multiple-groups' element={<Multiplegroupcreate />} />
           <Route path='/select-group' element={<Grouplists/>} />
+
         </Route>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<LoginPage />}></Route>
+        <Route path="*" element={<NotFound />}></Route>
       </Routes>
+      {/* </Suspense> */}
     </BrowserRouter>
   );
 }
 
-export default App
+export default App;

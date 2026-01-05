@@ -1,10 +1,7 @@
 import { type FC } from "react";
-// import HorizontalBar from "./HorizontalBar";
-// import CalclulatorArea from "./CalclulatorArea";
 import { Outlet } from "react-router-dom";
-// import Footer from "./Footer";
 import Header from "./Header";
-
+import Sidebar from "../common/sidebar";
 const Layout: FC = () => {
   return (
     <div className="flex min-h-screen w-full">
@@ -18,7 +15,9 @@ const Layout: FC = () => {
       </div>
 
       {/* RIGHT BLUE STRIP */}
-      <div className="w-36 bg-primary" />
+      <div className="w-36 bg-primary py-4 text-sm text-white flex flex-col items-center">
+        <Sidebar />
+      </div>
     </div>
   );
 };

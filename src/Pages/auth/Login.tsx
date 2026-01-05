@@ -16,7 +16,6 @@ const Login = () => {
       return;
     }
     setError("");
-    console.log("Logging in with", { email, password });
     navigate("/");
     // Here you can add API call for authentication
   };
