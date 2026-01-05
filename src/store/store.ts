@@ -1,10 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import companyReducer from "../Pages/company/slice";
-import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
+import ledgerReducer from "../Pages/Ledger/LedgerSlice";
+import {
+  useDispatch,
+  useSelector,
+  type TypedUseSelectorHook,
+} from "react-redux";
 
 export const store = configureStore({
   reducer: {
     company: companyReducer,
+    ledger: ledgerReducer,
   },
 });
 
