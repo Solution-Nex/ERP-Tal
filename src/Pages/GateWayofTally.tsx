@@ -6,6 +6,7 @@ import { useAppSelector } from "../store/store";
 import { setSidebarButtons } from "./sidebarSlice";
 import { useAppDispatch } from "../store/store";
 import { setEditing, setSelectedCompany } from "./company/slice";
+
 const GateWayofTally: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
