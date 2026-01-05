@@ -284,6 +284,7 @@ const GateWayofTally: FC = () => {
                 {renderMenuItems(currentMenuItems)}
               </div>
             </TallyWindow>
+        
           </div>
         </div>
       </div>

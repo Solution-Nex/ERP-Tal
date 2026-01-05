@@ -1,17 +1,17 @@
 import { lazy } from 'react';
 import './index.css'
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-//pages
-const Layout = lazy(() => import("./Components/layout/Layout"));
-const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
-const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
-const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
-const LoginPage = lazy(() => import("./Pages/auth/Login"));
-const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
-const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
-const VoucherForm = lazy(()=>import("./Pages/vouchers/VoucherForm"))
-const VoucherList = lazy(()=>import("./Pages/vouchers/VoucherList"))
-const NotFound = lazy(() => import("./Pages/NotFound"));
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+const Layout = lazy(() => import('./Components/layout/Layout'));
+const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"))
+const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"))
+const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"))
+const Groups = lazy(() => import("./Pages/group/Groups"))
+const Singlegroupcreation = lazy(() => import("./Pages/group/singlegroup/Singlegroupcreation"))
+const Multiplegroupcreate = lazy(() => import("./Pages/group/multiplegroups/multiplegroupcreate"))
+const Grouplists = lazy(()=> import("./Components/common/Groupslist"))
+
+const Login = lazy(() => import("./Pages/auth/Login"))
+
 
 function App() {
   return (
@@ -19,13 +19,15 @@ function App() {
       {/* <Suspense fallback={<div>Loading...</div>}> */}
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<GateWayofTally />}></Route>
-          <Route path="/select-company" element={<SelectCompany />}></Route>
-          <Route path="/create-company" element={<Compneycreation />}></Route>
-          <Route path="/accounts/new-ledger" element={<LedgerCreation />} />
-          <Route path="/accounts/ledgers" element={<SelectLedger />} />
-          <Route path="/vouchers/new" element={<VoucherForm />} />
-          <Route path="/vouchers" element={<VoucherList />} />
+
+          <Route index element={<GateWayofTally />} />
+          <Route path="/select-company" element={<SelectCompany />} />
+          <Route path="/create-company" element={<Compneycreation />} />
+          <Route path='/groups' element={<Groups />} />
+          <Route path='/create-single-group' element={<Singlegroupcreation />} />
+          <Route path='/create-multiple-groups' element={<Multiplegroupcreate />} />
+          <Route path='/select-group' element={<Grouplists/>} />
+
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="*" element={<NotFound />}></Route>
