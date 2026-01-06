@@ -1,4 +1,4 @@
-export type MenuState = "gateway" | "info" | "accounts" | "ledgers";
+export type MenuState = "gateway" | "info" | "accounts" | "ledgers" | "groups";
 
 export interface MenuItem {
   id: string;
@@ -13,6 +13,7 @@ export const menuTitles: Record<MenuState, string> = {
   info: "Company info",
   accounts: "Accounts Info",
   ledgers: "Ledgers",
+  groups: "Groups",
 };
 
 export const createMenuItems = (
@@ -68,7 +69,11 @@ export const createMenuItems = (
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("gateway") },
   ],
   accounts: [
-    { id: "groups", label: "Groups", path: "" },
+    {
+      id: "groups",
+      label: "Groups",
+      path: "/groups" /* onClick: () => handleMenuAction("groups") */,
+    },
     {
       id: "ledger",
       label: "Ledger",
@@ -81,6 +86,12 @@ export const createMenuItems = (
     { id: "create", label: "Create", path: "/accounts/new-ledger" },
     { id: "display", label: "Display", path: "/accounts/ledgers" },
     { id: "alter", label: "Alter", path: "/accounts/new-ledger" },
+    { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
+  ],
+  groups: [
+    { id: "create", label: "Create", path: "/groups" },
+    { id: "display", label: "Display", path: "/groups" },
+    { id: "alter", label: "Alter", path: "/groups" },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
 });

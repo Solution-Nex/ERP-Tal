@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
-import CalclulatorArea from "../Components/common/CalclulatorArea";
+import Sidebar from "../Components/common/Sidebar";
 import TallyWindow from "../Components/common/TallyWindow";
 import { useAppSelector } from "../store/store";
 import { setSidebarButtons } from "./sidebarSlice";
 import { useAppDispatch } from "../store/store";
 import { setEditing, setSelectedCompany } from "./company/slice";
+import type { CompanyFromBackend } from "./company/slice";
 import type { MenuState, MenuItem } from "./menuConfig";
 import { menuTitles, createMenuItems } from "./menuConfig";
-
 
 const GateWayofTally: FC = () => {
   const dispatch = useAppDispatch();
@@ -18,7 +18,9 @@ const GateWayofTally: FC = () => {
   const [menuState, setMenuState] = useState<MenuState>("gateway");
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const itemsRef = useRef<Map<string, HTMLElement | null>>(new Map());
-  const { selectedCompany } = useAppSelector((state) => state.company);
+  const { selectedCompany } = useAppSelector((state) => state.company) as {
+    selectedCompany: CompanyFromBackend | null;
+  };
 
   useEffect(() => {
     document.title = "Gateway of Tally - SN ERP";
@@ -117,7 +119,7 @@ const GateWayofTally: FC = () => {
       // Escape - Go back
       if (e.key === "Escape") {
         e.preventDefault();
-        if (menuState === "ledgers") {
+        if (menuState === "ledgers" || menuState === "groups") {
           handleMenuAction("accounts");
         } else if (menuState === "accounts" || menuState === "info") {
           handleMenuAction("gateway");
@@ -160,20 +162,20 @@ const GateWayofTally: FC = () => {
   const renderMenuItems = (items: MenuItem[]) => {
     return items.map((item, index) => {
       const isLink = item.path && !item.onClick;
-      const isMasterItem = menuState === "gateway" && ["accounts-info", "inventory-info"].includes(item.id);
-      const isTransactionItem = menuState === "gateway" && ["accounting-vouchers", "inventory-vouchers"].includes(item.id);
+      const isMasterItem =
+        menuState === "gateway" &&
+        ["accounts-info", "inventory-info"].includes(item.id);
+      const isTransactionItem =
+        menuState === "gateway" &&
+        ["accounting-vouchers", "inventory-vouchers"].includes(item.id);
 
       return (
         <div className="w-full" key={item.id}>
           {isMasterItem && index === 0 && (
-            <h2 className="mb-2 text-sm font-bold">
-              Masters
-            </h2>
+            <h2 className="mb-2 text-sm font-bold">Masters</h2>
           )}
           {isTransactionItem && index === 2 && (
-            <h2 className="mb-2 text-sm font-bold">
-              Transactions
-            </h2>
+            <h2 className="mb-2 text-sm font-bold">Transactions</h2>
           )}
           {isLink ? (
             <a
@@ -285,12 +287,11 @@ const GateWayofTally: FC = () => {
                 {renderMenuItems(currentMenuItems)}
               </div>
             </TallyWindow>
-        
           </div>
         </div>
       </div>
-      <div>
-        <CalclulatorArea />
+      <div className="bg-primary border-t border-gray-400 py-4 text-sm text-white flex flex-col items-center">
+        <Sidebar />
       </div>
     </div>
   );

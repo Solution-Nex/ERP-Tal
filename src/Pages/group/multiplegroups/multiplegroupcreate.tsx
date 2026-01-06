@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Select from "../../../Components/common/Select";
 import { groupSchema, type GroupFormValues } from "./multiplegroupschema";
 

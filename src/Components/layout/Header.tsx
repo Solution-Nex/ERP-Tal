@@ -4,7 +4,7 @@ import { NavButton } from "../common/NavButton";
 const Header: FC = () => {
   return (
     <>
-      <div className=" fixed top-0 right-36 left-0 transition-colors border-b border-muted bg-surface ">
+      <div className=" fixed top-0 right-0 left-0 transition-colors border-b border-muted bg-surface ">
         <div className="w-full bg-surface">
           <div className="flex justify-between">
             <NavButton alpha="P:" text="Print" />

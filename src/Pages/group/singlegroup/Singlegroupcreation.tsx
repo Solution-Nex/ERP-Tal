@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai"
 import Field from "../../../Components/common/Field";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Select from "../../../Components/common/Select";
 import { groupSchema, type GroupFormValues } from "./groupschems";
 
