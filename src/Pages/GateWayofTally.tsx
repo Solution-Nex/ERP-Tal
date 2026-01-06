@@ -9,6 +9,7 @@ import { setEditing, setSelectedCompany } from "./company/slice";
 import type { MenuState, MenuItem } from "./menuConfig";
 import { menuTitles, createMenuItems } from "./menuConfig";
 
+
 const GateWayofTally: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
