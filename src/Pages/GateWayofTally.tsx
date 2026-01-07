@@ -38,8 +38,10 @@ const GateWayofTally: FC = () => {
 
   useEffect(() => {
     const items = Array.from(itemsRef.current.values());
-    items[activeIndex]?.focus();
-  }, [activeIndex]);
+    if (items.length > 0) {
+      items[activeIndex]?.focus();
+    }
+  }, [activeIndex, menuState]);
 
   // Select Company
   const handleSelectCompany = () => navigate("/select-company");
