@@ -40,20 +40,20 @@ const Vouchertype: FC = () => {
 
     switch (key) {
       case "c":
-        navigate("/create-single-group", {
+        navigate("/voucher-creation", {
           state: { mode: "create" }
         });
 
         break;
 
       case "d":
-        navigate("/select-group", {
+        navigate("/voucher-creation", {
           state: { mode: "display" }
         });
         break;
 
       case "a":
-        navigate("/select-group", {
+        navigate("/voucher-creation", {
           state: { mode: "alter" }
         });
 

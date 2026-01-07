@@ -1,4 +1,4 @@
-export type MenuState = "gateway" | "info" | "accounts" | "ledgers";
+export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype";
 
 export interface MenuItem {
   id: string;
@@ -12,7 +12,9 @@ export const menuTitles: Record<MenuState, string> = {
   gateway: "Gateway of Tally",
   info: "Company info",
   accounts: "Accounts Info",
+
   ledgers: "Ledgers",
+  vouchertype: "voucher-type",
 };
 
 export const createMenuItems = (
@@ -74,13 +76,19 @@ export const createMenuItems = (
       label: "Ledger",
       onClick: () => handleMenuAction("ledgers"),
     },
-    { id: "voucher-types", label: "Voucher Types", path: "" },
+    { id: "voucher-types", label: "Voucher Types", onClick: ()=> handleMenuAction("vouchertype") },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("gateway") },
   ],
   ledgers: [
     { id: "create", label: "Create", path: "/accounts/new-ledger" },
     { id: "display", label: "Display", path: "/accounts/ledgers" },
     { id: "alter", label: "Alter", path: "/accounts/new-ledger" },
+    { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
+  ],
+  vouchertype: [
+    { id: "create", label: "Create", path: "/voucher-creation" },
+    { id: "display", label: "Display", path: "/voucher-creation" },
+    { id: "alter", label: "Alter", path: "/voucher-creation" },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
 });

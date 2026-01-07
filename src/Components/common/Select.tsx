@@ -2,22 +2,26 @@ import React, { forwardRef } from "react";
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
+  hidelabel?: boolean;
   options: string[];
   error?: string;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, options = [], error, className, ...rest }, ref) => {
+  ({ label, hidelabel = false, options = [], error, className, ...rest }, ref) => {
     return (
       <div
         className={`flex flex-row justify-start text-sm items-center ${className}`}
       >
+        {!hidelabel && label && 
         <label htmlFor={label} className="min-w-48">
           {label}
           {rest.required && <span className="text-red-500">*</span>}
         </label>
+        }
 
-        <span className="text-xl">:</span>
+        {!hidelabel && <span className="text-xl">:</span> }
+        
 
         <div className="w-full flex flex-col">
           <select
