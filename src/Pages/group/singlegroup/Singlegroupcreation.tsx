@@ -89,7 +89,7 @@ const Groups: FC = () => {
                     e.stopPropagation();
                     submitFromModal();
                     if(mode === "create"){
-                        navigate("/groups")
+                        navigate("/select-group");
                     }else{
                         navigate("/select-group");
                     }
@@ -104,7 +104,7 @@ const Groups: FC = () => {
 
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
                 e.preventDefault();
-                navigate("/groups");
+                navigate("/select-group");
                 return;
             }
 
@@ -162,143 +162,145 @@ const Groups: FC = () => {
 
 
     return (
-        <div className="min-h-screen flex flex-col bg-transparent">
-            {/*Header */}
+      <div className="min-h-screen flex flex-col bg-transparent">
+        {/*Header */}
 
-            <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
-                <div>
-                    <h1 className="capitalize text-black text-md  font-semibold">
-                        {mode === "create"
-                            ? "Gateway of Tally"
-                            : mode === "display"
-                                ? "Display Group"
-                                : mode === "alter"
-                                    ? "Update the Value"
-                                    : "Gateway of Tally"}
-                    </h1>
-                </div>
-                <h1 className="capitalize text-black text-md  font-semibold">
-                    Company name
-                </h1>
-                <div className="flex items-center gap-3">
-                    <h1 className="text-muted">Ctrl + M</h1>
-                    <button type="button" className=" text-[var(--text)]" aria-label="Close">
-                        <AiTwotoneCloseSquare className="w-5 h-5" onClick={() => navigate("/groups")} />
-                    </button>
-                </div>
+        <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
+          <div>
+            <h1 className="capitalize text-black text-md  font-semibold">
+              {mode === "create"
+                ? "Gateway of Tally"
+                : mode === "display"
+                ? "Display Group"
+                : mode === "alter"
+                ? "Update the Value"
+                : "Gateway of Tally"}
+            </h1>
+          </div>
+          <h1 className="capitalize text-black text-md  font-semibold">
+            Company name
+          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-muted">Ctrl + M</h1>
+            <button
+              type="button"
+              className=" text-[var(--text)]"
+              aria-label="Close"
+            >
+              <AiTwotoneCloseSquare
+                className="w-5 h-5"
+                onClick={() => navigate("/select-group")}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <form
+          ref={formRef}
+          onSubmit={(e) => e.preventDefault()}
+          className="flex-1 border-r-2 border-gray-400 px-2 w-[45%]"
+        >
+          <div className=" w-full px-4 py-4 mb-3 border-b-2 border-gray-400 ">
+            <div className="mb-6">
+              {errors.name && (
+                <p className="text-red-600 text-sm">{errors.name.message}</p>
+              )}
+              <Field
+                label="Name"
+                type="text"
+                readOnly={mode === "display"}
+                {...register("name")}
+              />
+
+              <Field
+                label="(alice)"
+                type="text"
+                readOnly={mode === "display"}
+                {...register("name")}
+              />
             </div>
+            <Select
+              label="Under"
+              options={undergroups}
+              {...register("under")}
+            />
+            {errors.under && (
+              <p className="text-red-600 text-sm">{errors.under.message}</p>
+            )}
+          </div>
 
-            {/* Main content */}
-            <form
-                ref={formRef}
-                onSubmit={(e) => e.preventDefault()}
-                className="flex-1 border-r-2 border-gray-400 px-2 w-[45%]">
-                <div className=" w-full px-4 py-4 mb-3 border-b-2 border-gray-400 ">
-                    <div className="mb-6">
-                        {errors.name && (
-                            <p className="text-red-600 text-sm">{errors.name.message}</p>
-                        )}
-                        <Field
-                            label="Name"
-                            type="text"
-                            readOnly={mode === "display"}
-                            {...register("name")}
-                        />
+          <div className="w-full mt-10 space-y-2">
+            <Select
+              label="Group behaves like a sub-ledger"
+              options={["No", "Yes"]}
+              {...register("behavesLikeSubLedger")}
+            />
 
+            <Select
+              label="Nett Debit/Credit Balances for Reporting"
+              options={["No", "Yes"]}
+              {...register("nettDebitCredit")}
+            />
 
+            <Select
+              label="Used for calculation (for example: taxes, discounts)"
+              options={["No", "Yes"]}
+              {...register("usedForCalculation")}
+            />
 
-                        <Field
-                            label="(alice)"
-                            type="text"
-                            readOnly={mode === "display"}
-                            {...register("name")}
-                        />
-
-                    </div>
-                    <Select
-                        label="Under"
-                        options={undergroups}
-                        {...register("under")}
-                    />
-                    {errors.under && (
-                        <p className="text-red-600 text-sm">{errors.under.message}</p>
-                    )}
-                </div>
-
-                <div className="w-full mt-10 space-y-2">
-                    <Select
-                        label="Group behaves like a sub-ledger"
-                        options={["No", "Yes"]}
-                        {...register("behavesLikeSubLedger")}
-                    />
-
-                    <Select
-                        label="Nett Debit/Credit Balances for Reporting"
-                        options={["No", "Yes"]}
-                        {...register("nettDebitCredit")}
-                    />
-
-                    <Select
-                        label="Used for calculation (for example: taxes, discounts)"
-                        options={["No", "Yes"]}
-                        {...register("usedForCalculation")}
-                    />
-
-                    <Select
-                        label="Method to allocate when used in purchase invoice"
-                        options={["Not Applicable", "Applicable"]}
-                        {...register("allocationMethod")}
-                    />
-
-
-                </div>
-            </form>
-            {/* Confirmation modal (desktop-styled) */}
-            {confirmOpen && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Confirm submit"
-                    onClick={() => {
-                        setConfirmOpen(false);
-                        previouslyFocused.current?.focus();
-                    }}
-                >
-                    <div
-                        className="w-[200px] bg-surface  shadow-xl p-6"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h2 className="text-md font-semibold mb-3">Confirm Submit</h2>
-                        {/* <p className="text-sm text-gray-600 mb-6">
+            <Select
+              label="Method to allocate when used in purchase invoice"
+              options={["Not Applicable", "Applicable"]}
+              {...register("allocationMethod")}
+            />
+          </div>
+        </form>
+        {/* Confirmation modal (desktop-styled) */}
+        {confirmOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirm submit"
+            onClick={() => {
+              setConfirmOpen(false);
+              previouslyFocused.current?.focus();
+            }}
+          >
+            <div
+              className="w-[200px] bg-surface  shadow-xl p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-md font-semibold mb-3">Confirm Submit</h2>
+              {/* <p className="text-sm text-gray-600 mb-6">
                 Are you sure you want to submit the form?
               </p> */}
 
-                        <div className="flex justify-between gap-3">
-                            <button
-                                type="button"
-                                className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
-                                onClick={() => {
-                                    setConfirmOpen(false);
-                                    previouslyFocused.current?.focus();
-                                }}
-                            >
-                                No
-                            </button>
-                            <button
-                                ref={yesButtonRef}
-                                type="button"
-                                className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
-                                onClick={submitFromModal}
-                            >
-                                Yes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-
+              <div className="flex justify-between gap-3">
+                <button
+                  type="button"
+                  className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
+                  onClick={() => {
+                    setConfirmOpen(false);
+                    previouslyFocused.current?.focus();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  ref={yesButtonRef}
+                  type="button"
+                  className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
+                  onClick={submitFromModal}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     );
 };
 export default Groups;

@@ -91,7 +91,7 @@ const SelectGroup: FC = () => {
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
         e.preventDefault();
-        navigate("/groups");
+        navigate("/");
         return;
       }
     };

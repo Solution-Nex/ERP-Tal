@@ -6,7 +6,7 @@ const Layout = lazy(() => import('./Components/layout/Layout'));
 const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"))
 const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"))
 const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"))
-const Groups = lazy(() => import("./Pages/group/Groups"))
+// const Groups = lazy(() => import("./Pages/group/Groups"))
 const Singlegroupcreation = lazy(() => import("./Pages/group/singlegroup/Singlegroupcreation"))
 const Multiplegroupcreate = lazy(() => import("./Pages/group/multiplegroups/multiplegroupcreate"))
 const Grouplists = lazy(()=> import("./Components/common/Groupslist"))
@@ -31,7 +31,7 @@ function App() {
           <Route path="/voucher-type" element={<Vouchertype />} />
           <Route path="/voucher-creation" element={<Vouchercreation />} />
           <Route path="/advancevouchersetting" element={<Advancevoucher />} />
-          <Route path="/groups" element={<Groups />} />
+          {/* <Route path="/groups" element={<Groups />} /> */}
           <Route
             path="/create-single-group"
             element={<Singlegroupcreation />}

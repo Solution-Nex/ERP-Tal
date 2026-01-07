@@ -5,7 +5,7 @@ import Field from "../../../src/Components/common/Field";
 import Select from "../../../src/Components/common/Select";
 import { groupSchema, type GroupFormValues } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch, type Resolver } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 const Groups: FC = () => {
   const location = useLocation();

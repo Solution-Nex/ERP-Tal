@@ -160,6 +160,8 @@ const GateWayofTally: FC = () => {
   const currentMenuItems = menuItems[menuState];
 
   const renderMenuItems = (items: MenuItem[]) => {
+    let lastSection = "";
+    
     return items.map((item, index) => {
       const isLink = item.path && !item.onClick;
       const isMasterItem =
@@ -168,6 +170,11 @@ const GateWayofTally: FC = () => {
       const isTransactionItem =
         menuState === "gateway" &&
         ["accounting-vouchers", "inventory-vouchers"].includes(item.id);
+      const shouldShowSection = item.section && item.section !== lastSection;
+      
+      if (shouldShowSection) {
+        lastSection = item.section || "";
+      }
 
       return (
         <div className="w-full" key={item.id}>
@@ -176,6 +183,9 @@ const GateWayofTally: FC = () => {
           )}
           {isTransactionItem && index === 2 && (
             <h2 className="mb-2 text-sm font-bold">Transactions</h2>
+          )}
+          {shouldShowSection && (
+            <h3 className="font-semibold mb-2">{item.section}</h3>
           )}
           {isLink ? (
             <a
@@ -187,10 +197,18 @@ const GateWayofTally: FC = () => {
               tabIndex={0}
               onClick={(e) => {
                 e.preventDefault();
-                navigate(item.path || "/");
+                navigate(item.path || "/", item.state ? { state: item.state } : undefined);
               }}
             >
-              {item.label}
+              {item.highlightChar !== undefined ? (
+                <>
+                  {item.label.slice(0, item.highlightChar)}
+                  <span className="text-green-700">{item.label[item.highlightChar]}</span>
+                  {item.label.slice(item.highlightChar + 1)}
+                </>
+              ) : (
+                item.label
+              )}
             </a>
           ) : (
             <button
@@ -205,6 +223,12 @@ const GateWayofTally: FC = () => {
                 <>
                   <span className="text-green-900">{item.shortcutKey}</span>
                   {item.label.slice(1)}
+                </>
+              ) : item.highlightChar !== undefined ? (
+                <>
+                  {item.label.slice(0, item.highlightChar)}
+                  <span className="text-green-700">{item.label[item.highlightChar]}</span>
+                  {item.label.slice(item.highlightChar + 1)}
                 </>
               ) : (
                 item.label

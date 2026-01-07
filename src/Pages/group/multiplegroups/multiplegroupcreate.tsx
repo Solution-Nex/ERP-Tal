@@ -69,7 +69,7 @@ const MultiGroupCreation = () => {
                     e.stopPropagation();
                     submitFromModal();
                     if (mode === "create-multiple") {
-                        navigate("/groups");
+                        navigate("select-group");
                     } else {
                         navigate("/select-group");
                     }
@@ -85,7 +85,7 @@ const MultiGroupCreation = () => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
                 e.preventDefault();
                 if (mode === "create-multiple") {
-                    navigate("/groups");
+                    navigate("/select-group");
                 } else {
                     navigate("/select-group");
                 }
