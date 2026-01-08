@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { useEffect, useState } from "react";
-import CalclulatorArea from "../../Components/common/CalclulatorArea";
+// import Sidebar from "../../Components/common/Sidebar";
 
 const SelectLedger = () => {
   const navigate = useNavigate();
@@ -113,7 +113,9 @@ const SelectLedger = () => {
           </div>
         </div>
       </div>
-      <CalclulatorArea />
+      {/* <div className="bg-primary border-t border-gray-400 py-4 text-sm text-white flex flex-col items-center">
+        <Sidebar />
+      </div> */}
     </div>
   );
 };

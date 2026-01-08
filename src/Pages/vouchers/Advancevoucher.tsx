@@ -34,9 +34,9 @@ const Groups: FC = () => {
 
   const {
     register,
-    setValue,
+    // setValue,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<VoucherTypeValue>({
     resolver: zodResolver(voucherTypeSchema) as Resolver<VoucherTypeValue>,
     defaultValues,
@@ -137,6 +137,7 @@ const Groups: FC = () => {
   };
 
   const onSubmit = (data: VoucherTypeValue) => {
+    console.log(data)
     // if (mode === "create") {
     //     console.log("CREATE GROUP", data);
     // }
