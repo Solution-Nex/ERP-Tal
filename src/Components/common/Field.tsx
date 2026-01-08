@@ -2,7 +2,7 @@ import React, { forwardRef, useState } from "react";
 
 
 interface FieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   hidelabel?: boolean;
   error?: string;
 }

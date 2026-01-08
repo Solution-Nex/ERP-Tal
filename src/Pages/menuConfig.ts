@@ -1,4 +1,4 @@
- export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype";
+ export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype" | "groups";
 
 export interface MenuItem {
   id: string;
@@ -15,10 +15,9 @@ export const menuTitles: Record<MenuState, string> = {
   gateway: "Gateway of Tally",
   info: "Company info",
   accounts: "Accounts Info",
-
   ledgers: "Ledgers",
   groups: "Groups",
-  voucherTypes: "Voucher Types",
+  vouchertype: "Voucher Types",
 };
 
 export const createMenuItems = (
@@ -98,6 +97,12 @@ export const createMenuItems = (
     { id: "create", label: "Create", path: "/voucher-creation" },
     { id: "display", label: "Display", path: "/voucher-creation" },
     { id: "alter", label: "Alter", path: "/voucher-creation" },
+    { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
+  ],
+  groups: [
+    { id: "create", label: "Create", path: "/select-group" },
+    { id: "display", label: "Display", path: "/select-group" },
+    { id: "alter", label: "Alter", path: "/select-group" },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
 });
