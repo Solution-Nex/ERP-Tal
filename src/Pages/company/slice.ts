@@ -3,11 +3,11 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import type { Company } from "./types";
+import type { Company, CompanyFromBackend } from "./types";
 import { fetchAll, update, deleteComp, create } from "./api";
 
 //Company + _id (from backend)
-export type CompanyFromBackend = Company & { _id: string };
+// export type CompanyFromBackend = Company & { _id: string };
 
 
 function extractErrorMessage(err: unknown, fallback = "An error occurred") {
@@ -32,8 +32,8 @@ interface CompanyState {
 
 const initialState: CompanyState = {
   companies: [
-    { _id: "1", name: "Demo Company", mailingName: "Demo Company", address: "123 Demo St", country: "Demo Country", useSecurityControl: "No", baseCurrencySymbol: "₹", state: "Demo State", phone: "1234567890", mobile: "0987654321", pincode: "123456", email: "demo@example.com", financialYearBeginsFrom: "2024-04-01", fax: "123-456-7890", tallyVaultPassword: "", repeatPassword: "", booksBeginningFrom: "2024-04-01" },
-    { _id: "2", name: "Test Company", mailingName: "Test Company", address: "456 Test Ave", country: "Test Country", useSecurityControl: "No", baseCurrencySymbol: "$", state: "Test State", phone: "2345678901", mobile: "1987654320", pincode: "654321", email: "test@example.com", financialYearBeginsFrom: "2024-04-01", fax: "987-654-3210", tallyVaultPassword: "", repeatPassword: "", booksBeginningFrom: "2024-04-01" },
+    { _id: "1", name: "Demo Company", mailingName: "Demo Company", address: "123 Demo St", country: "Demo Country", useSecurityControl: "No", baseCurrencySymbol: "₹", state: "Demo State", phone: "1234567890", mobile: "0987654321", pincode: "123456", email: "demo@example.com", financialYearBeginsFrom: "2024-04-01", fax: "123-456-7890", tallyVaultPassword: "", repeatPassword: "", booksBeginningFrom: "2024-04-01", createdAt: "", updatedAt: "" },
+    { _id: "2", name: "Test Company", mailingName: "Test Company", address: "456 Test Ave", country: "Test Country", useSecurityControl: "No", baseCurrencySymbol: "$", state: "Test State", phone: "2345678901", mobile: "1987654320", pincode: "654321", email: "test@example.com", financialYearBeginsFrom: "2024-04-01", fax: "987-654-3210", tallyVaultPassword: "", repeatPassword: "", booksBeginningFrom: "2024-04-01", createdAt: "", updatedAt: "" },
   ],
   selectedCompany: null,
   companiesFetched: false,

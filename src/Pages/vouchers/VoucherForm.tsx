@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState, type FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AiTwotoneCloseSquare } from "react-icons/ai"
+import { AiTwotoneCloseSquare } from "react-icons/ai";
 import Field from "../../../src/Components/common/Field";
 import Select from "../../../src/Components/common/Select";
 import { groupSchema, type GroupFormValues } from "./types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useAppSelector } from "../../store/store";
 
-const Groups: FC = () => {
+const VoucherForm: FC = () => {
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const formRef = useRef<HTMLFormElement | null>(null);
   const yesButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -17,17 +18,29 @@ const Groups: FC = () => {
 
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
 
-  const undergroups = ['Bank Account', 'Capital Account', 'Asset details']
+  const undergroups: string[] = [
+    "Accountigng Vouchers",
+    "Inventory Vouchers",
+    "Payroll Vouchers",
+    "Statutory Vouchers",
+    "Other Vouchers",
+  ];
 
-    {/*for display group */ }
-    const mode = location.state?.mode ?? "create";
-    const groupName = location.state?.groupName ?? "";
+  const selectedCompany = useAppSelector(
+    (state) => state.company.selectedCompany
+  );
+
+  {
+    /*for display group */
+  }
+  const mode = location.state?.mode ?? "create";
+  const group = location.state?.group ?? "";
 
   const {
     register,
     setValue,
     handleSubmit,
-    control,
+    // control,
     formState: { errors },
   } = useForm<GroupFormValues>({
     resolver: zodResolver(groupSchema),
@@ -35,38 +48,37 @@ const Groups: FC = () => {
       name: "",
       alias: "",
       selecttupeofvoucher: "",
-      abbrivation: "",
-      methodofvouchernumbering: "Automatic",
-      useadvanceconfiguration:"No",
+      // abbrivation: "",
+      // methodofvouchernumbering: "Automatic",
+      // useadvanceconfiguration:"No",
       useeffectivedateforvoucher: "No",
       makevouchertypeoptionalbydefault: "Yes",
       allownarrationinvoucher: "No",
       providenarrationforeachledgerinvoucher: "No",
       printvoucheraftersaving: "No",
-      useforposinvoicing: "No",
-      defaultprinttitle: "",
-      declaration: "",
+      // useforposinvoicing: "No",
+      // defaultprinttitle: "",
+      // declaration: "",
+      classname: "",
     },
   });
 
-     useEffect(() => {
-        if (groupName) {
-            setValue("name", groupName);
-        }
-    }, [groupName, setValue]);
-
-  const useAdvanceConfig = useWatch({
-  control,
-  name: "useadvanceconfiguration",
-});
-
-
   useEffect(() => {
-  if (useAdvanceConfig === "Yes") {
-    navigate("/advancevouchersetting");
-  }
-}, [useAdvanceConfig, navigate]);
+    if (group) {
+      setValue("name", group);
+    }
+  }, [group, setValue]);
 
+  //   const useAdvanceConfig = useWatch({
+  //   control,
+  //   name: "useadvanceconfiguration",
+  // });
+
+  //   useEffect(() => {
+  //   if (useAdvanceConfig === "Yes") {
+  //     navigate("/advancevouchersetting");
+  //   }
+  // }, [useAdvanceConfig, navigate]);
 
   // helper: move focus to next/prev focusable element inside the form
   const moveFocus = (delta: number) => {
@@ -118,6 +130,12 @@ const Groups: FC = () => {
           setConfirmOpen(false);
           previouslyFocused.current?.focus();
         }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          submitFromModal();
+          setConfirmOpen(false);
+        }
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
@@ -148,34 +166,48 @@ const Groups: FC = () => {
           setConfirmOpen(true);
         }
       }
-
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   }, [confirmOpen, navigate]);
 
-
   const submitFromModal = () => {
     setConfirmOpen(false);
     previouslyFocused.current?.blur();
     // programmatically run react-hook-form submit
-    handleSubmit(onSubmit)()
+    handleSubmit(onSubmit)();
   };
 
   const onSubmit = (data: GroupFormValues) => {
-      if (mode === "create") {
-          console.log("CREATE GROUP", data);
-      }
+    const formattedData = {
+      ...data,
+      companyId: selectedCompany?._id,
+    };
 
-      if (mode === "alter") {
-          console.log("UPDATE GROUP", data);
-      }
+    console.log("═══════════════════════════════════════");
+    console.log("🎯 VOUCHER FORM SUBMISSION");
+    console.log("═══════════════════════════════════════");
+    console.log("Mode:", mode);
+    console.log("Company:", {
+      id: selectedCompany?._id,
+      name: selectedCompany?.name,
+    });
+    console.log("Form Data:", formattedData);
+    console.log("═══════════════════════════════════════");
+
+    if (mode === "create") {
+      console.log("✓ CREATE VOUCHER TYPE");
+      // TODO: Call API to create voucher
+    }
+
+    if (mode === "alter") {
+      console.log("✓ UPDATE VOUCHER TYPE");
+      // TODO: Call API to update voucher
+    }
   };
 
-
-
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen px-4 bg-transparent">
       {/*Header */}
 
       <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
@@ -185,181 +217,199 @@ const Groups: FC = () => {
           </h1>
         </div>
         <h1 className="capitalize text-black text-md  font-semibold">
-          Company name
+          {selectedCompany?.name}
         </h1>
         <div className="flex items-center gap-3">
           <h1 className="text-muted">Ctrl + M</h1>
-          <button type="button" className=" text-[var(--text)]" aria-label="Close">
-            <AiTwotoneCloseSquare className="w-5 h-5" onClick={() => navigate("/groups")} />
+          <button
+            type="button"
+            className=" text-[var(--text)]"
+            aria-label="Close"
+          >
+            <AiTwotoneCloseSquare
+              className="w-5 h-5"
+              onClick={() => navigate("/groups")}
+            />
           </button>
         </div>
       </div>
 
       {/* Main content */}
-        <form
-          ref={formRef}
-          onSubmit={(e) => e.preventDefault()}
-          className=" border-2 border-gray-400">
-            <div className="w-full h-full p-3 border-b-2 border-gray-600">
-              {errors.name && (
-                <p className="text-red-600 text-sm">{errors.name.message}</p>
+      <form
+        ref={formRef}
+        onSubmit={(e) => e.preventDefault()}
+        className=" border-2 border-gray-400"
+      >
+        <div className="w-full h-full p-3 border-b-2 border-gray-600">
+          {errors.name && (
+            <p className="text-red-600 text-sm">{errors.name.message}</p>
+          )}
+          <Field
+            label="Name"
+            type="text"
+            readOnly={mode === "display"}
+            {...register("name")}
+          />
+
+          <Field
+            label="(alice)"
+            type="text"
+            readOnly={mode === "display"}
+            {...register("name")}
+          />
+        </div>
+        <div className="w-full h-full flex items-stretch ">
+          <div className="pt-5 border-r-2 border-gray-600 w-[40%] flex flex-col">
+            <h1 className="underline text-lg font-bold text-center">General</h1>
+            <div className="border-b-2 border-gray-600 p-4">
+              <Select
+                label="Type of voucher"
+                options={undergroups}
+                {...register("selecttupeofvoucher")}
+              />
+              {undergroups.length === 0 && (
+                <p className="text-yellow-600 text-sm">No groups available</p>
               )}
-              <Field
-                label="Name"
+              {errors.selecttupeofvoucher && (
+                <p className="text-red-600 text-sm">
+                  {errors.selecttupeofvoucher.message}
+                </p>
+              )}
+              {/* <Field
+                label="Abbriviation"
                 type="text"
-                readOnly={mode==="display"}
-                {...register("name")}
+                readOnly={mode === "display"}
+                {...register("abbrivation")}
+              /> */}
+            </div>
+            {/* <div className="border-b-2 border-gray-600 p-4">
+              <Select
+                label="Method of voucher numbering"
+                options={["Automatic", "mannual"]}
+                {...register("methodofvouchernumbering")}
+              />
+              <Select
+                label="Use advance configuration"
+                options={["No", "Yes"]}
+                {...register("useadvanceconfiguration")}
+              />
+            </div> */}
+            <div className="p-4 mb-5">
+              <Select
+                label="Use effective dates for voucher"
+                options={["No", "Yes"]}
+                {...register("useeffectivedateforvoucher")}
               />
 
-              <Field
-                label="(alice)"
-                type="text"
-                readOnly={mode==="display"}
-                {...register("name")}
+              <Select
+                label={`Make as "Optional" by default`}
+                options={["No", "Yes"]}
+                {...register("makevouchertypeoptionalbydefault")}
+              />
+
+              <Select
+                label="Allow narration in voucher"
+                options={["Yes", "NO"]}
+                {...register("allownarrationinvoucher")}
+              />
+
+              <Select
+                label="Provide narration for each ledger in voucher"
+                options={["Yes", "NO"]}
+                {...register("providenarrationforeachledgerinvoucher")}
               />
             </div>
-            <div className="w-full h-full flex items-stretch ">
-              <div className="pt-5 border-r-2 border-gray-600 w-[40%] flex flex-col">
-                <h1 className="underline text-lg font-bold text-center">General</h1>
-                <div className="border-b-2 border-gray-600 p-4">
-                  <Select
-                    label="Select type of voucher"
-                    options={undergroups}
-                    {...register("selecttupeofvoucher")}
-                  />
-                  {errors.selecttupeofvoucher && (
-                    <p className="text-red-600 text-sm">{errors.selecttupeofvoucher.message}</p>
-                  )}
-                  <Field
-                    label="Abbriviation"
-                    type="text"
-                    readOnly={mode==="display"}
-                    {...register("abbrivation")}
-                  />
-                </div>
-                <div className="border-b-2 border-gray-600 p-4">
-                  <Select
-                    label="Method of voucher numbering"
-                    options={["Automatic", "mannual"]}
-                    {...register("methodofvouchernumbering")}
-                  />
-                  <Select
-                    label="Use advance configuration"
-                    options={["No", "Yes"]}
-                    {...register("useadvanceconfiguration")}
-                  />
-                </div>
-                <div className="p-4 mb-5">
-                  <Select
-                    label="Use effective dates for voucher"
-                    options={["No", "Yes"]}
-                    {...register("useeffectivedateforvoucher")}
-                  />
-
-                  <Select
-                    label={`Make this voucher type as "Optional" by default`}
-                    options={["No", "Yes"]}
-                    {...register("makevouchertypeoptionalbydefault")}
-                  />
-
-                  <Select
-                    label="Allow narration in voucher"
-                    options={["Yes", "NO"]}
-                    {...register("allownarrationinvoucher")}
-                  />
-
-                  <Select
-                    label="Provide narration for each ledger in voucher"
-                    options={["Yes", "NO"]}
-                    {...register("providenarrationforeachledgerinvoucher")}
-                  />
-
-                </div>
-              </div>
-              <div className=" w-[40%] pt-5 border-r-2 border-gray-600 flex flex-col">
-                <h1 className="underline text-lg font-bold text-center">Printing</h1>
-                <div className="p-4">
-                  <Select
-                    label="Print voucher after saving"
-                    options={["Yes", "NO"]}
-                    {...register("printvoucheraftersaving")}
-                  />
-                  <Select
-                    label="Use for POS invoicing"
-                    options={["Yes", "NO"]}
-                    {...register("useforposinvoicing")}
-                  />
-                  <Field
-                    label="Default print title"
-                    type="text"
-                    readOnly={mode==="display"}
-                    {...register("defaultprinttitle")}
-                  />
-                  <Field
-                    label="Declaration"
-                    type="text"
-                    readOnly={mode==="display"}
-                    {...register("declaration")}
-                  />
-                </div>
-
-              </div>
-              <div className=" w-[20%] pt-5 flex flex-col">
-                <h1 className="underline text-lg font-bold text-center">Name of Class</h1>
-              </div>
+          </div>
+          <div className=" w-[40%] pt-5 border-r-2 border-gray-600 flex flex-col">
+            <h1 className="underline text-lg font-bold text-center">
+              Printing
+            </h1>
+            <div className="p-4">
+              <Select
+                label="Print voucher after saving"
+                options={["Yes", "NO"]}
+                {...register("printvoucheraftersaving")}
+              />
+              {/* <Select
+                label="Use for POS invoicing"
+                options={["Yes", "NO"]}
+                {...register("useforposinvoicing")}
+              />
+              <Field
+                label="Default print title"
+                type="text"
+                readOnly={mode === "display"}
+                {...register("defaultprinttitle")}
+              />
+              <Field
+                label="Declaration"
+                type="text"
+                readOnly={mode === "display"}
+                {...register("declaration")}
+              /> */}
             </div>
+          </div>
+          <div className=" w-[20%] pt-5 flex flex-col">
+            <h1 className="underline text-lg font-bold text-center">
+              Name of Class
+            </h1>
+            <div className="mx-auto my-5">
+              <Field
+                className="w-full"
+                type="text"
+                readOnly={mode === "display"}
+                {...register("classname")}
+              />
+            </div>
+          </div>
+        </div>
 
-
-
-          {/* Confirmation modal (desktop-styled) */}
-          {confirmOpen && (
+        {/* Confirmation modal (desktop-styled) */}
+        {confirmOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirm submit"
+            onClick={() => {
+              setConfirmOpen(false);
+              previouslyFocused.current?.focus();
+            }}
+          >
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Confirm submit"
-              onClick={() => {
-                setConfirmOpen(false);
-                previouslyFocused.current?.focus();
-              }}
+              className="w-[200px] bg-surface  shadow-xl p-6"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div
-                className="w-[200px] bg-surface  shadow-xl p-6"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h2 className="text-md font-semibold mb-3">Confirm Submit</h2>
-                {/* <p className="text-sm text-gray-600 mb-6">
+              <h2 className="text-md font-semibold mb-3">Confirm Submit</h2>
+              {/* <p className="text-sm text-gray-600 mb-6">
                 Are you sure you want to submit the form?
               </p> */}
 
-                <div className="flex justify-between gap-3">
-                  <button
-                    type="button"
-                    className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
-                    onClick={() => {
-                      setConfirmOpen(false);
-                      previouslyFocused.current?.focus();
-                    }}
-                  >
-                    No
-                  </button>
-                  <button
-                    ref={yesButtonRef}
-                    type="button"
-                    className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
+              <div className="flex justify-between gap-3">
+                <button
+                  type="button"
+                  className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
+                  onClick={() => {
+                    setConfirmOpen(false);
+                    previouslyFocused.current?.focus();
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  ref={yesButtonRef}
+                  type="button"
+                  className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
                   onClick={submitFromModal}
-                  >
-                    Yes
-                  </button>
-                </div>
+                >
+                  Yes
+                </button>
               </div>
             </div>
-          )}
-        </form>
-
-
+          </div>
+        )}
+      </form>
     </div>
-
   );
 };
-export default Groups;
+export default VoucherForm;

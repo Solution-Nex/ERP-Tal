@@ -1,4 +1,4 @@
-export type MenuState = "gateway" | "info" | "accounts" | "ledgers" | "groups";
+export type MenuState = "gateway" | "info" | "accounts" | "ledgers" | "groups" | "voucherTypes";
 
 export interface MenuItem {
   id: string;
@@ -17,6 +17,7 @@ export const menuTitles: Record<MenuState, string> = {
   accounts: "Accounts Info",
   ledgers: "Ledgers",
   groups: "Groups",
+  voucherTypes: "Voucher Types",
 };
 
 export const createMenuItems = (
@@ -83,7 +84,7 @@ export const createMenuItems = (
       label: "Ledger",
       onClick: () => handleMenuAction("ledgers"),
     },
-    { id: "voucher-types", label: "Voucher Types", path: "" },
+    { id: "voucher types", label: "Voucher Types", path: "", onClick: () => handleMenuAction("voucherTypes") },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("gateway") },
   ],
   ledgers: [
@@ -94,13 +95,61 @@ export const createMenuItems = (
   ],
   groups: [
     // Single Group
-    { id: "sg-create", label: "Create", path: "/create-single-group", section: "Single Group", highlightChar: 0, state: { mode: "create" } },
-    { id: "sg-display", label: "Display", path: "/select-group", section: "Single Group", highlightChar: 0, state: { mode: "display" } },
-    { id: "sg-alter", label: "Alter", path: "/select-group", section: "Single Group", highlightChar: 0, state: { mode: "alter" } },
+    {
+      id: "sg-create",
+      label: "Create",
+      path: "/create-single-group",
+      section: "Single Group",
+      highlightChar: 0,
+      state: { mode: "create" },
+    },
+    {
+      id: "sg-display",
+      label: "Display",
+      path: "/select-group",
+      section: "Single Group",
+      highlightChar: 0,
+      state: { mode: "display" },
+    },
+    {
+      id: "sg-alter",
+      label: "Alter",
+      path: "/select-group",
+      section: "Single Group",
+      highlightChar: 0,
+      state: { mode: "alter" },
+    },
     // Multiple Groups
-    { id: "mg-create", label: "Create", path: "/create-multiple-groups", section: "Multiple Groups", highlightChar: 0, state: { mode: "create-multiple" } },
-    { id: "mg-display", label: "Display", path: "/select-group", section: "Multiple Groups", highlightChar: 1, state: { mode: "display-multiple" } },
-    { id: "mg-alter", label: "Alter", path: "/select-group", section: "Multiple Groups", highlightChar: 2, state: { mode: "alter-multiple" } },
+    {
+      id: "mg-create",
+      label: "Create",
+      path: "/create-multiple-groups",
+      section: "Multiple Groups",
+      highlightChar: 0,
+      state: { mode: "create-multiple" },
+    },
+    {
+      id: "mg-display",
+      label: "Display",
+      path: "/select-group",
+      section: "Multiple Groups",
+      highlightChar: 1,
+      state: { mode: "display-multiple" },
+    },
+    {
+      id: "mg-alter",
+      label: "Alter",
+      path: "/select-group",
+      section: "Multiple Groups",
+      highlightChar: 2,
+      state: { mode: "alter-multiple" },
+    },
+    { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
+  ],
+  voucherTypes: [
+    { id: "create", label: "Create", path: "/accounts/new-voucher-type" },
+    { id: "display", label: "Display", path: "/accounts/voucher-types" },
+    { id: "alter", label: "Alter", path: "/accounts/new-voucher-type" },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
 });
