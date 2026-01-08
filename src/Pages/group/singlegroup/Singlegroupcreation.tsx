@@ -33,12 +33,16 @@ const Groups: FC = () => {
 
     {/*for display group */ }
     const mode = location.state?.mode ?? "create";
-    const group = location.state?.group ?? "";
+    const group = location.state?.group ?? null;
+
+    const isDisplay = mode === "display";
+
 
     const {
         register,
         setValue,
         handleSubmit,
+        watch,
         formState: { errors },
     } = useForm<GroupFormValues>({
         resolver: zodResolver(groupSchema),
@@ -51,10 +55,16 @@ const Groups: FC = () => {
     });
 
     useEffect(() => {
-        if (group) {
-            setValue("name", group);
-        }
+      if (!group) return;
+
+      setValue("name", group.name ?? "");
+      setValue("under", group.under ?? "");
+      setValue("behavesLikeSubLedger", group.behavesLikeSubLedger ?? "No");
+      setValue("netDebitCredit", group.netDebitCredit ?? "No");
+      setValue("usedForCalculation", group.usedForCalculation ?? "No");
+      setValue("allocationMethod", group.allocationMethod ?? "Not Applicable");
     }, [group, setValue]);
+    
 
     // helper: move focus to next/prev focusable element inside the form
     const moveFocus = (delta: number) => {
@@ -192,7 +202,7 @@ const Groups: FC = () => {
             </h1>
           </div>
           <h1 className="capitalize text-black text-md  font-semibold">
-           {selectedCompany?.name}
+            {selectedCompany?.name}
           </h1>
           <div className="flex items-center gap-3">
             <h1 className="text-muted">Ctrl + M</h1>
@@ -223,22 +233,25 @@ const Groups: FC = () => {
               <Field
                 label="Name"
                 type="text"
-                readOnly={mode === "display"}
+                readOnly={isDisplay}
                 {...register("name")}
               />
 
               <Field
                 label="(alice)"
                 type="text"
-                readOnly={mode === "display"}
+                readOnly={isDisplay}
                 {...register("name")}
               />
             </div>
             <Select
               label="Under"
               options={undergroups}
+              value={watch("under")} // ← make sure it shows the selected value
+              disabled={isDisplay} // ← keeps it read-only if display mode
               {...register("under")}
             />
+
             {errors.under && (
               <p className="text-red-600 text-sm">{errors.under.message}</p>
             )}
@@ -248,24 +261,28 @@ const Groups: FC = () => {
             <Select
               label="Group behaves like a sub-ledger"
               options={["No", "Yes"]}
+              disabled={isDisplay}
               {...register("behavesLikeSubLedger")}
             />
 
             <Select
               label="Nett Debit/Credit Balances for Reporting"
               options={["No", "Yes"]}
+              disabled={isDisplay}
               {...register("netDebitCredit")}
             />
 
             <Select
               label="Used for calculation (for example: taxes, discounts)"
               options={["No", "Yes"]}
+              disabled={isDisplay}
               {...register("usedForCalculation")}
             />
 
             <Select
               label="Method to allocate when used in purchase invoice"
               options={["Not Applicable", "Applicable"]}
+              disabled={isDisplay}
               {...register("allocationMethod")}
             />
           </div>
