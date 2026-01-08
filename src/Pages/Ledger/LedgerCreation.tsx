@@ -4,6 +4,8 @@ import { AiTwotoneCloseSquare } from "react-icons/ai";
 import type { FormChangeEvent, FormDataType } from "./Types";
 import Select from "../../Components/common/Select";
 import Field from "../../Components/common/Field";
+// Import the new component
+import GroupListSidebar from "./GroupListSidebar";
 
 const LedgerCreation = () => {
   const navigate = useNavigate();
@@ -39,6 +41,23 @@ const LedgerCreation = () => {
     panItNO: "",
   });
 
+  // --- DATA ---
+  const GroupList = [
+    "Bank Accounts",
+    "Bank OCC A/c",
+    "Bank OD A/c",
+    "Branch / Divisons",
+    "Capital Account",
+    "Cash-in-Hand",
+    "Current Assets",
+  ];
+
+  // Filtering happens here so arrow keys know the length
+  const FilterGroupList = GroupList.filter((item) =>
+    item.toLowerCase().includes(under.toLowerCase())
+  );
+
+  // --- VALIDATION ---
   const Validate = (): boolean => {
     const newErrors: typeof errors = {};
 
@@ -109,20 +128,6 @@ const LedgerCreation = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const GroupList = [
-    "Bank Accounts",
-    "Bank OCC A/c",
-    "Bank OD A/c",
-    "Branch / Divisons",
-    "Capital Account",
-    "Cash-in-Hand",
-    "Current Assets",
-  ];
-
-  const FilterGroupList = GroupList.filter((item) =>
-    item.toLowerCase().includes(under.toLowerCase())
-  );
-
   // Helper to move focus between inputs (Tally style)
   const moveFocus = (delta: number) => {
     const form = formRef.current;
@@ -154,6 +159,12 @@ const LedgerCreation = () => {
   const handleAskConfirm = () => {
     if (!Validate()) return;
     setConfirmOpen(true);
+  };
+
+  // --- SIDEBAR HANDLERS ---
+  const handleGroupSelect = (item: string) => {
+    setunder(item);
+    setGroupList(false);
   };
 
   useEffect(() => {
@@ -193,24 +204,27 @@ const LedgerCreation = () => {
       // Enter Key Logic
       if (e.key === "Enter") {
         const active = document.activeElement as HTMLElement | null;
-        handleAskConfirm();
+
+        // Prevent default submit unless it's a textarea
+        if (active?.tagName !== "TEXTAREA") {
+          e.preventDefault();
+        }
+
+        // If Group List is open and we have an active selection
         if (showGroupList && activeIndex >= 0) {
+          // Logic handled in Input onKeyDown, but if global catches it:
           return;
         }
 
-        if (active?.tagName !== "TEXTAREA") {
-          e.preventDefault();
-
-          previouslyFocused.current = active;
-
-          setConfirmOpen(true);
-        }
+        // If simple enter to submit form
+        handleAskConfirm();
+        previouslyFocused.current = active;
       }
     };
 
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [confirmOpen, showGroupList, activeIndex, navigate]);
+  }, [confirmOpen, showGroupList, activeIndex, navigate, FormData]); // Added FormData dependency
 
   return (
     <div className="min-h-screen h-screen flex flex-col w-full ">
@@ -289,11 +303,11 @@ const LedgerCreation = () => {
                     if (e.target.value === "") {
                       setGroupList(true);
                     }
-
                     setActiveIndex(-1);
                   }}
                   onKeyDown={(e) => {
                     if (!showGroupList) return;
+
                     if (e.key === "ArrowDown") {
                       e.preventDefault();
                       setActiveIndex((prev) =>
@@ -308,9 +322,8 @@ const LedgerCreation = () => {
                     }
                     if (e.key === "Enter" && activeIndex >= 0) {
                       e.preventDefault();
-                      e.stopPropagation(); // Stop the global Enter listener from opening the modal
-                      setunder(FilterGroupList[activeIndex]);
-                      setGroupList(false);
+                      e.stopPropagation();
+                      handleGroupSelect(FilterGroupList[activeIndex]);
                     }
                     if (e.key === "Escape") {
                       setGroupList(false);
@@ -382,7 +395,6 @@ const LedgerCreation = () => {
                   </div>
                 ) : (
                   <>
-                    {" "}
                     <Select
                       label="Inventory values are affected ?"
                       options={["No", "Yes"]}
@@ -404,9 +416,7 @@ const LedgerCreation = () => {
               </div>
 
               <div className="w-full ml-3">
-                <h2 className="text-center mb-4 font-sm">
-                  Mailing details
-                </h2>
+                <h2 className="text-center mb-4 font-sm">Mailing details</h2>
                 <Field
                   label="Name"
                   type="text"
@@ -481,33 +491,14 @@ const LedgerCreation = () => {
           </form>
         </div>
 
-        {showGroupList && (
-          <div className="w-full max-w-sm bg-[#C5C6C7] border border-gray-500 h-full overflow-y-auto fixed top-10 right-5">
-            <h2 className="text-center font-serif text-white text-xl py-1 bg-[#176EE8] w-full">
-              List of Groups
-            </h2>
-            <ul>
-              {FilterGroupList.map((item, index) => (
-                <li
-                  key={index}
-                  className={`px-2 py-1 cursor-pointer ${
-                    index === activeIndex
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-400"
-                  }`}
-                  onMouseEnter={() => setActiveIndex(index)}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    setunder(item);
-                    setGroupList(false);
-                  }}
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {/* --- HERE IS THE NEW COMPONENT --- */}
+        <GroupListSidebar
+          isOpen={showGroupList}
+          filteredList={FilterGroupList}
+          activeIndex={activeIndex}
+          onSelect={handleGroupSelect}
+          onHover={setActiveIndex}
+        />
       </div>
 
       {/* Confirmation Modal */}

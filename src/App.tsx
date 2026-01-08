@@ -1,22 +1,27 @@
-import { lazy } from 'react';
-import './index.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import NotFound from './Pages/NotFound';
-const Layout = lazy(() => import('./Components/layout/Layout'));
-const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"))
-const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"))
-const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"))
+import { lazy } from "react";
+import "./index.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import NotFound from "./Pages/NotFound";
+import Inventory_voucher from "./Pages/InventoryVochers/Inventory_voucher";
+const Layout = lazy(() => import("./Components/layout/Layout"));
+const GateWayofTally = lazy(() => import("./Pages/GateWayofTally"));
+const SelectCompany = lazy(() => import("./Pages/company/SelectCompany"));
+const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
 // const Groups = lazy(() => import("./Pages/group/Groups"))
-const Singlegroupcreation = lazy(() => import("./Pages/group/singlegroup/Singlegroupcreation"))
-const Multiplegroupcreate = lazy(() => import("./Pages/group/multiplegroups/multiplegroupcreate"))
-const Grouplists = lazy(()=> import("./Components/common/Groupslist"))
+const Singlegroupcreation = lazy(
+  () => import("./Pages/group/singlegroup/Singlegroupcreation")
+);
+const Multiplegroupcreate = lazy(
+  () => import("./Pages/group/multiplegroups/multiplegroupcreate")
+);
+const Grouplists = lazy(() => import("./Components/common/Groupslist"));
 
 const LoginPage = lazy(() => import("./Pages/auth/Login"));
 const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
 const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
-const Vouchertype= lazy(()=> import("./Pages/vouchers/Vouchertype"))
-const Vouchercreation = lazy(()=> import("./Pages/vouchers/VoucherForm"))
-const Advancevoucher = lazy(()=> import("./Pages/vouchers/Advancevoucher"))
+const Vouchertype = lazy(() => import("./Pages/vouchers/Vouchertype"));
+const Vouchercreation = lazy(() => import("./Pages/vouchers/VoucherForm"));
+const Advancevoucher = lazy(() => import("./Pages/vouchers/Advancevoucher"));
 
 function App() {
   return (
@@ -31,6 +36,7 @@ function App() {
           <Route path="/voucher-type" element={<Vouchertype />} />
           <Route path="/voucher-creation" element={<Vouchercreation />} />
           <Route path="/advancevouchersetting" element={<Advancevoucher />} />
+          <Route path="/inventory-voucher" element={<Inventory_voucher />} />
           {/* <Route path="/groups" element={<Groups />} /> */}
           <Route
             path="/create-single-group"
