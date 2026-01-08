@@ -1,4 +1,4 @@
-export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype";
+ export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype";
 
 export interface MenuItem {
   id: string;
@@ -6,6 +6,9 @@ export interface MenuItem {
   path?: string;
   onClick?: () => void;
   shortcutKey?: string;
+  section?: string;
+  highlightChar?: number;
+  state?: Record<string, any>;
 }
 
 export const menuTitles: Record<MenuState, string> = {
@@ -14,7 +17,8 @@ export const menuTitles: Record<MenuState, string> = {
   accounts: "Accounts Info",
 
   ledgers: "Ledgers",
-  vouchertype: "voucher-type",
+  groups: "Groups",
+  voucherTypes: "Voucher Types",
 };
 
 export const createMenuItems = (
@@ -70,7 +74,12 @@ export const createMenuItems = (
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("gateway") },
   ],
   accounts: [
-    { id: "groups", label: "Groups", path: "" },
+    {
+      id: "groups",
+      label: "Groups",
+      path: "",
+      onClick: () => handleMenuAction("groups"),
+    },
     {
       id: "ledger",
       label: "Ledger",

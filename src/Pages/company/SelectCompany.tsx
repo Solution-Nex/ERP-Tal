@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/store";
-import { fetchCompanies, setSelectedCompany } from "./slice";
+import {
+  fetchCompanies,
+  setSelectedCompany,
+  type CompanyFromBackend,
+} from "./slice";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 
@@ -40,12 +44,12 @@ const SelectCompany = () => {
   }, [navigate]);
 
   // Filtered list based on search
-  const filteredCompanies = companies.filter((cmp) =>
+  const filteredCompanies = companies.filter((cmp: CompanyFromBackend) =>
     cmp.name.toLowerCase().includes(search.toLowerCase())
   );
 
   // Handle selecting company
-  const handleSelectCompany = (company: (typeof companies)[0]) => {
+  const handleSelectCompany = (company: CompanyFromBackend) => {
     dispatch(setSelectedCompany(company));
     navigate("/");
   };
@@ -71,10 +75,10 @@ const SelectCompany = () => {
           </h2>
 
           <div className="mt-4 max-w-xl text-sm space-y-2">
-            <div className="flex">
+            {/* <div className="flex">
               <span className="w-24 font-semibold">Path :</span>
               <span>C:\Users\Public\Tally.ERP9\Data</span>
-            </div>
+            </div> */}
 
             <div className="flex items-center">
               <span className="w-24 font-semibold">Name :</span>
@@ -100,7 +104,7 @@ const SelectCompany = () => {
           {loading ? (
             <div className="py-4 text-center text-sm">Loading...</div>
           ) : filteredCompanies.length > 0 ? (
-            filteredCompanies.map((cmp, i) => (
+            filteredCompanies.map((cmp: CompanyFromBackend, i: number) => (
               <div
                 key={cmp._id ?? i}
                 ref={(el) => {

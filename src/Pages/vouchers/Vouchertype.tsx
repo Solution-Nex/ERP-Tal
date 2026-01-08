@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FC } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai"
 
 

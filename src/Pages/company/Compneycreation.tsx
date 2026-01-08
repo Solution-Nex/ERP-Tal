@@ -6,7 +6,7 @@ import Field from "../../Components/common/Field";
 import Select from "../../Components/common/Select";
 import Section from "../../Components/common/Section";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
-import { companyFormSchema } from "./types";
+import { companyFormSchema, type CompanyFromBackend } from "./types";
 import type { Company } from "./types";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import {
@@ -14,7 +14,6 @@ import {
   deleteCompany,
   setEditing,
   updateCompany,
-  type CompanyFromBackend,
 } from "./slice";
 
 const CompanyCreation = () => {

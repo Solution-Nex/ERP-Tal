@@ -12,7 +12,7 @@ export const groupSchema = z.object({
 
   behavesLikeSubLedger: z.enum(["Yes", "No"]),
 
-  nettDebitCredit: z.enum(["Yes", "No"]),
+  netDebitCredit: z.enum(["Yes", "No"]),
 
   usedForCalculation: z.enum(["Yes", "No"]),
 
