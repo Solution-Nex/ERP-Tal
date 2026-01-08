@@ -181,7 +181,6 @@ const [rows, setRows] = useState<Group[]>(() => {
   /* ---------- confirm modal ---------- */
   const openConfirmModal = () => {
     const formData = getValues();
-    console.log("data",formData)
     const nonEmptyGroups = (formData.groups || []).filter((g) => g && g.name && g.name.trim());
 
     if (nonEmptyGroups.length === 0) {
