@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import SideList from "./SideList"; // Assuming you have this component
-
+import SideList from "./SideList";
+import { BsFillSendFill } from "react-icons/bs";
 // Types
 type RowData = {
   id: number;
@@ -24,6 +24,9 @@ const GowDowns = ["Multan", "Lahore", "Karachi", "Islamabad"];
 
 const Inventory_voucher = () => {
   const navigate = useNavigate();
+  // Ref to remember where focus was before popup opened
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+
   const [date, setdata] = useState<String>("");
   const [day, setday] = useState<String>("");
 
@@ -35,8 +38,9 @@ const Inventory_voucher = () => {
     { id: 101, itemName: "", godown: "", quantity: "", rate: "", amount: "" },
   ]);
 
-  // --- Popup/Search State ---
+  // --- Popup/Search/Confirm State ---
   const [showList, setShowList] = useState<boolean>(false);
+  const [confirmOpen, setConfirmOpen] = useState<boolean>(false); // NEW: Confirm Modal
   const [activeSearch, setActiveSearch] = useState<ActiveSearchState>(null);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
 
@@ -54,6 +58,61 @@ const Inventory_voucher = () => {
     document.title = "Inventroy Voucher - SN ERP";
     SetDate();
   }, []);
+
+  // --- Global Keyboard Listener for Confirmation Modal & Ctrl+A ---
+  useEffect(() => {
+    const handleGlobalKey = (e: KeyboardEvent) => {
+      // 1. If Modal is Open
+      if (confirmOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.key.toLowerCase() === "y" || e.key === "Enter") {
+          handleFinalSubmit();
+        } else if (e.key.toLowerCase() === "n" || e.key === "Escape") {
+          setConfirmOpen(false);
+          // Return focus to input
+          setTimeout(() => previouslyFocused.current?.focus(), 0);
+        }
+        return;
+      }
+
+      // 2. Ctrl + A to Save immediately
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
+        e.preventDefault();
+        triggerConfirm();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKey);
+    return () => window.removeEventListener("keydown", handleGlobalKey);
+  }, [confirmOpen, sourceRows, destRows, date]);
+
+  // --- Logic to Trigger Confirmation ---
+  const triggerConfirm = () => {
+    // Save current focus
+    previouslyFocused.current = document.activeElement as HTMLElement;
+    setConfirmOpen(true);
+  };
+
+  // --- Final Submit Logic ---
+  const handleFinalSubmit = () => {
+    // Filter out empty rows if needed, or send as is
+    const payload = {
+      voucherDate: date,
+      voucherDay: day,
+      sourceConsumption: sourceRows.filter((r) => r.itemName), // Only rows with items
+      destinationProduction: destRows.filter((r) => r.itemName),
+    };
+
+    console.log("---------------- FORM SUBMITTED ----------------");
+    console.log("JSON Payload:", JSON.stringify(payload, null, 2));
+    console.log("Full Object:", payload);
+    console.log("------------------------------------------------");
+
+    setConfirmOpen(false);
+    // navigate("/"); // Uncomment to redirect after save
+  };
 
   // --- Filtering Logic ---
   const getFilteredList = () => {
@@ -141,14 +200,14 @@ const Inventory_voucher = () => {
     else setDestRows((prev) => [...prev, newRow]);
   };
 
-  // --- Keyboard Handling (Enter to add row) ---
+  // --- Keyboard Handling (Row Navigation & Enter Logic) ---
   const handleKeyDown = (
     e: React.KeyboardEvent,
     side: "source" | "dest",
     index: number,
     field: keyof RowData
   ) => {
-    // List Navigation
+    // 1. Side List Navigation
     if (showList) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -169,17 +228,37 @@ const Inventory_voucher = () => {
       return;
     }
 
-    // Add new Row on Enter at the last field
+    // 2. Logic for "Item Name" Field
+    if (field === "itemName" && e.key === "Enter") {
+      const rows = side === "source" ? sourceRows : destRows;
+      // If Item Name is empty, it usually means "End of List" -> Save
+      if (rows[index].itemName.trim() === "") {
+        e.preventDefault();
+        triggerConfirm();
+        return;
+      }
+    }
+
+    // 3. Logic for "Amount" Field (Last Field)
     if (e.key === "Enter" && field === "amount") {
       const rows = side === "source" ? sourceRows : destRows;
-      if (index === rows.length - 1) {
-        addNewRow(side);
+      const currentRow = rows[index];
+
+      // If Amount/Row is filled, Add New Row
+      if (currentRow.itemName !== "" && currentRow.amount !== "") {
+        if (index === rows.length - 1) {
+          addNewRow(side);
+        }
+      } else {
+        // If row is empty or incomplete and user presses Enter on Amount, usually Save
+        e.preventDefault();
+        triggerConfirm();
       }
     }
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 relative">
       {/* Header */}
       <div className="w-full pt-10 px-4 flex items-center justify-between bg-gray-300 shrink-0">
         <div>
@@ -188,12 +267,14 @@ const Inventory_voucher = () => {
           </h1>
         </div>
         <div className="flex items-center gap-3">
+          <h1 className="text-muted text-sm">(submit) Ctrl + A </h1>
+          <button type="button" onClick={() => triggerConfirm()}>
+            <BsFillSendFill className="w-3 h-4" />
+          </button>
+        </div>
+        <div className="flex items-center gap-3">
           <h1 className="text-muted text-sm">Ctrl + M</h1>
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            aria-label="Close"
-          >
+          <button type="button" onClick={() => navigate("/")}>
             <AiTwotoneCloseSquare className="w-5 h-5" />
           </button>
         </div>
@@ -214,7 +295,6 @@ const Inventory_voucher = () => {
       </div>
 
       {/* Main Content Area */}
-      {/* Height fix: flex-1 takes remaining space, overflow-hidden preventing full page scroll */}
       <section className="flex flex-1 w-full overflow-hidden px-1 pb-2 gap-1">
         {/* Left Side: Source */}
         <div className="w-1/2 flex flex-col h-full border border-black bg-white">
@@ -243,6 +323,9 @@ const Inventory_voucher = () => {
                       <input
                         type="text"
                         value={row.itemName}
+                        placeholder={
+                          index === sourceRows.length - 1 ? "End of List" : ""
+                        }
                         onFocus={() => {
                           setActiveSearch({
                             side: "source",
@@ -262,7 +345,7 @@ const Inventory_voucher = () => {
                         onKeyDown={(e) =>
                           handleKeyDown(e, "source", index, "itemName")
                         }
-                        className="w-full bg-transparent outline-none focus:bg-yellow-100 px-1"
+                        className="w-full bg-transparent outline-none focus:bg-yellow-100 px-1 placeholder:text-xs placeholder:italic"
                       />
                     </td>
                     {/* Godown */}
@@ -341,7 +424,7 @@ const Inventory_voucher = () => {
               </tbody>
             </table>
           </div>
-          {/* Footer Total (Optional) */}
+          {/* Footer Total */}
           <div className="border-t border-black p-2 bg-gray-100 shrink-0 text-right">
             Total:{" "}
             {sourceRows.reduce(
@@ -377,6 +460,9 @@ const Inventory_voucher = () => {
                       <input
                         type="text"
                         value={row.itemName}
+                        placeholder={
+                          index === destRows.length - 1 ? "End of List" : ""
+                        }
                         onFocus={() => {
                           setActiveSearch({
                             side: "dest",
@@ -396,7 +482,7 @@ const Inventory_voucher = () => {
                         onKeyDown={(e) =>
                           handleKeyDown(e, "dest", index, "itemName")
                         }
-                        className="w-full bg-transparent outline-none focus:bg-yellow-100 px-1"
+                        className="w-full bg-transparent outline-none focus:bg-yellow-100 px-1 placeholder:text-xs placeholder:italic"
                       />
                     </td>
                     <td className="p-1">
@@ -466,7 +552,7 @@ const Inventory_voucher = () => {
               </tbody>
             </table>
           </div>
-          {/* Footer Total (Optional) */}
+          {/* Footer Total */}
           <div className="border-t border-black p-2 bg-gray-100 shrink-0 text-right">
             Total:{" "}
             {destRows.reduce((acc, curr) => acc + Number(curr.amount || 0), 0)}
@@ -483,6 +569,35 @@ const Inventory_voucher = () => {
         onHover={setActiveIndex}
         ListName={activeSearch?.field === "item" ? "Items" : "Godowns"}
       />
+
+      {/* --- CONFIRMATION MODAL --- */}
+      {confirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-[#FFFFD9] border-2 border-black shadow-2xl p-6 w-[300px] text-center">
+            <h2 className="text-xl font-bold mb-6">Accept?</h2>
+            <div className="flex justify-around">
+              <button
+                onClick={handleFinalSubmit}
+                className="px-6 py-2 bg-blue-600 text-white font-bold hover:bg-blue-700 border border-black"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => {
+                  setConfirmOpen(false);
+                  setTimeout(() => previouslyFocused.current?.focus(), 0);
+                }}
+                className="px-6 py-2 bg-gray-200 text-black font-bold hover:bg-gray-300 border border-black"
+              >
+                No
+              </button>
+            </div>
+            <div className="mt-4 text-xs text-gray-500">
+              (Press 'Y' or 'Enter' for Yes, 'N' or 'Esc' for No)
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
