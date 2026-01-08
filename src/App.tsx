@@ -15,7 +15,7 @@ const LoginPage = lazy(() => import("./Pages/auth/Login"));
 const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
 const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
 const Vouchertype= lazy(()=> import("./Pages/vouchers/Vouchertype"))
-const Vouchercreation = lazy(()=> import("./Pages/vouchers/VoucherForm"))
+const VoucherForm = lazy(()=> import("./Pages/vouchers/VoucherForm"))
 const Advancevoucher = lazy(()=> import("./Pages/vouchers/Advancevoucher"))
 
 function App() {
@@ -29,7 +29,10 @@ function App() {
           <Route path="/accounts/new-ledger" element={<LedgerCreation />} />
           <Route path="/accounts/ledgers" element={<SelectLedger />} />
           <Route path="/voucher-type" element={<Vouchertype />} />
-          <Route path="/voucher-creation" element={<Vouchercreation />} />
+          <Route
+            path="/accounts/new-voucher-type"
+            element={<VoucherForm />}
+          />
           <Route path="/advancevouchersetting" element={<Advancevoucher />} />
           {/* <Route path="/groups" element={<Groups />} /> */}
           <Route

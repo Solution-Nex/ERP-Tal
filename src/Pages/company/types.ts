@@ -46,3 +46,10 @@ export const companyFormSchema = z.object({
 });
 
 export type Company = z.infer<typeof companyFormSchema>;
+
+
+export interface CompanyFromBackend extends Company {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}

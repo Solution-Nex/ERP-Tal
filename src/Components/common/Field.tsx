@@ -2,7 +2,7 @@ import React, { forwardRef, useState } from "react";
 
 
 interface FieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   error?: string;
 }
 
@@ -14,11 +14,13 @@ const Field = forwardRef<HTMLInputElement, FieldProps>(
 
     return (
       <div className="flex flex-row justify-start items-center text-md ">
-        <label htmlFor={label} className="text-sm min-w-48">
-          {label}
-          {rest.required && <span className="text-red-500">*</span>}
-        </label>
-        <span className="text-xl">:</span>
+        {label && (
+          <label htmlFor={label} className="text-sm min-w-48">
+            {label}
+            {rest.required && <span className="text-red-500">*</span>}
+          </label>
+        )}
+        <span className="text-xl">{label && ":"}</span>
         <div className="w-full flex flex-row items-center justify-start">
           <input
             {...rest}

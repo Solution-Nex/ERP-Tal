@@ -6,24 +6,34 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Select from "../../../Components/common/Select";
 import { groupSchema, type GroupFormValues } from "./groupschems";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
+import { createGroup, updateGroup } from "../slice";
 
 
 
 const Groups: FC = () => {
     const location = useLocation();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const selectedGroup = location.state?.group || {};
 
     const formRef = useRef<HTMLFormElement | null>(null);
     const yesButtonRef = useRef<HTMLButtonElement | null>(null);
     const previouslyFocused = useRef<HTMLElement | null>(null);
 
     const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+    const selectedCompany = useAppSelector((state) => state.company.selectedCompany);
+
 
     const undergroups = ['Bank Account', 'Capital Account', 'Asset details']
 
+    useEffect(() => {
+      selectedCompany ?? navigate("/select-company");
+    },[selectedCompany, navigate]);
+
     {/*for display group */ }
     const mode = location.state?.mode ?? "create";
-    const groupName = location.state?.groupName ?? "";
+    const group = location.state?.group ?? "";
 
     const {
         register,
@@ -34,17 +44,17 @@ const Groups: FC = () => {
         resolver: zodResolver(groupSchema),
         defaultValues: {
             behavesLikeSubLedger: "No",
-            nettDebitCredit: "No",
+            netDebitCredit: "No",
             usedForCalculation: "No",
             allocationMethod: "Not Applicable",
         },
     });
 
     useEffect(() => {
-        if (groupName) {
-            setValue("name", groupName);
+        if (group) {
+            setValue("name", group);
         }
-    }, [groupName, setValue]);
+    }, [group, setValue]);
 
     // helper: move focus to next/prev focusable element inside the form
     const moveFocus = (delta: number) => {
@@ -84,15 +94,15 @@ const Groups: FC = () => {
                     previouslyFocused.current?.focus();
                 }
                 // allow 'y' and 'n' keys
-                if (e.key.toLowerCase() === "y") {
+                if (e.key.toLowerCase() === "y" || e.key.toLocaleLowerCase() === "enter") {
                     e.preventDefault();
                     e.stopPropagation();
                     submitFromModal();
-                    if(mode === "create"){
-                        navigate("/select-group");
-                    }else{
-                        navigate("/select-group");
-                    }
+                    // if(mode === "create"){
+                    //     navigate("/select-group");
+                    // }else{
+                    //     navigate("/select-group");
+                    // }
                 }
                 if (e.key.toLowerCase() === "n") {
                     e.preventDefault();
@@ -152,10 +162,14 @@ const Groups: FC = () => {
     const onSubmit = (data: GroupFormValues) => {
         if (mode === "create") {
             console.log("CREATE GROUP", data);
+            dispatch(createGroup(data));
+            navigate("/select-group");
         }
 
         if (mode === "alter") {
-            console.log("UPDATE GROUP", data);
+          dispatch(updateGroup({ id: selectedGroup._id, data: data }));
+          navigate("/select-group");
+          console.log("UPDATE GROUP", data);
         }
     };
 
@@ -169,16 +183,16 @@ const Groups: FC = () => {
           <div>
             <h1 className="capitalize text-black text-md  font-semibold">
               {mode === "create"
-                ? "Gateway of Tally"
+                ? "Create Group"
                 : mode === "display"
-                ? "Display Group"
+                ? "View Group"
                 : mode === "alter"
                 ? "Update the Value"
                 : "Gateway of Tally"}
             </h1>
           </div>
           <h1 className="capitalize text-black text-md  font-semibold">
-            Company name
+           {selectedCompany?.name}
           </h1>
           <div className="flex items-center gap-3">
             <h1 className="text-muted">Ctrl + M</h1>
@@ -240,7 +254,7 @@ const Groups: FC = () => {
             <Select
               label="Nett Debit/Credit Balances for Reporting"
               options={["No", "Yes"]}
-              {...register("nettDebitCredit")}
+              {...register("netDebitCredit")}
             />
 
             <Select

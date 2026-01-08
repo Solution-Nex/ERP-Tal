@@ -1,39 +1,110 @@
 import { useEffect, useRef, useMemo, useState, type FC } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
+import { useAppSelector } from "../../store/store";
+import type { GroupFromBackend } from "../../Pages/group/types";
+// import type { GroupFromBackend } from "../../Pages/group/types";
 // import Sidebar from "./Sidebar";
 
 const GROUPS = [
-  "Bank Accounts",
-  "Bank OCC A/c",
-  "Bank OD A/c",
-  "Branch / Divisions",
-  "Capital Account",
-  "Cash-in-Hand",
-  "Current Assets",
-  "Current Liabilities",
-  "Deposits (Asset)",
-  "Direct Expenses",
-  "Direct Incomes",
-  "Duties & Taxes",
-  "Expenses (Direct)",
-  "Expenses (Indirect)",
-  "Fixed Assets",
-  "Income (Direct)",
-  "Income (Indirect)",
-  "Indirect Expenses",
-  "Indirect Incomes",
-  "Investments",
-  "Loans & Advances (Asset)",
-  "Loans (Liability)",
-  "Misc. Expenses (Asset)",
-  "Provisions",
-  "Purchase Accounts",
-  "Reserves & Surplus",
-  "Retained Earnings",
-  "Sales Accounts",
-  "Secured Loans",
-  "Stock-in-Hand",
+  {
+  // id: 1,
+  name: "Bank Accounts",
+  alias: "Bank A/cs",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 2,/
+  name: "Bank OCC A/c",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 3,
+  name: "Bank OCC A/c",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 4,
+  name: "Bank OD A/c",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 5,
+  name: "Bank OD A/c",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 6,
+  name: "Branch / Divisions",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 7,
+  name: "Capital Account",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+  {
+  // id: 8,
+  name: "Cash-in-Hand",
+  under: "Current Assets",
+  behavesLikeSubLedger: "No",
+  netDebitCredit: "Yes",
+  usedForCalculation: "Yes",
+  allocationMethod: "None",
+  companyId: "<company_id>",
+  createdAt: "10/20/2023",
+  updatedAt: "10/20/2023",
+  },
+
 ];
 
 const SelectGroup: FC = () => {
@@ -47,6 +118,11 @@ const SelectGroup: FC = () => {
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const [activeIndex, setActiveIndex] = useState<number>(-1);
+  const selectedCompany = useAppSelector((state) => state.company.selectedCompany);
+
+  useEffect(() => {
+    selectedCompany ?? navigate("/select-company");
+  }, [selectedCompany, navigate]);
 
   useEffect(() => {
     if (activeIndex === -1) {
@@ -101,22 +177,23 @@ const SelectGroup: FC = () => {
   }, [activeIndex, navigate]);
 
   const filteredGroups = useMemo(() => {
-    return GROUPS.filter((g) => g.toLowerCase().includes(search.toLowerCase()));
+    return GROUPS.filter((g) => g.name.toLowerCase().includes(search.toLowerCase()));
   }, [search]);
 
-  const handleSelect = (group: string) => {
+  const handleSelect = (group: Partial<GroupFromBackend>) => {
+    console.log("handle group", group);
     if (mode == "create" || mode === "display" || mode === "alter") {
       navigate("/create-single-group", {
         state: {
           mode,
-          groupName: group,
+          group: group,
         },
       });
     } else {
       navigate("/create-multiple-groups", {
         state: {
           mode,
-          groupName: group,
+          group: group,
         },
       });
     }
@@ -132,7 +209,7 @@ const SelectGroup: FC = () => {
           </h1>
         </div>
         <h1 className="capitalize text-black text-md  font-semibold">
-          Company name
+          {selectedCompany && selectedCompany.name}
         </h1>
         <div className="flex items-center gap-3">
           <h1 className="text-muted">Ctrl + M</h1>
@@ -172,16 +249,16 @@ const SelectGroup: FC = () => {
         <div className="max-h-[488px] min-h-[488px] overflow-y-auto no-scrollbar">
           {filteredGroups.map((group, idx) => (
             <div
-              key={group}
+              key={idx}
               ref={(el) => {
                 itemsRef.current[idx] = el;
               }}
               tabIndex={-1}
-              onClick={() => handleSelect(group)}
-              onKeyDown={(e) => e.key === "Enter" && handleSelect(group)}
+              onClick={() => handleSelect(group as Partial<GroupFromBackend>)}
+              onKeyDown={(e) => e.key === "Enter" && handleSelect(group as Partial<GroupFromBackend>)}
               className="px-3 py-1 text-sm cursor-pointer focus:bg-[#ABB190] outline-none"
             >
-              {group}
+              {group.name}
             </div>
           ))}
 
