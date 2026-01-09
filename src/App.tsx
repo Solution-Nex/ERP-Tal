@@ -10,6 +10,16 @@ const Compneycreation = lazy(() => import("./Pages/company/Compneycreation"));
 const LoginPage = lazy(() => import("./Pages/auth/login"));
 const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
 const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
+const LedgerAlteration = lazy(() => import("./Pages/Ledger/LedgerAlteration"));
+const MultipleLedgerCreation = lazy(
+  () => import("./Pages/Ledger/MultipleLedgerCreation")
+);
+const MultipleLedgerAlteration = lazy(
+  () => import("./Pages/Ledger/MultipleLedgerAlteration")
+);
+const SelectMultipleLedgers = lazy(
+  () => import("./Pages/Ledger/SelectMultipleLedgers")
+);
 function App() {
   return (
     <BrowserRouter>
@@ -20,7 +30,20 @@ function App() {
           <Route path="/select-company" element={<SelectCompany />}></Route>
           <Route path="/create-company" element={<Compneycreation />}></Route>
           <Route path="ledger-creation" element={<LedgerCreation />} />
+          <Route path="ledger-alter" element={<LedgerAlteration />} />
           <Route path="ledger-selection" element={<SelectLedger />} />
+          <Route
+            path="multiple-ledger-creation"
+            element={<MultipleLedgerCreation />}
+          />
+          <Route
+            path="multiple-ledger-alter"
+            element={<MultipleLedgerAlteration />}
+          />
+          <Route
+            path="multiple-ledger-select"
+            element={<SelectMultipleLedgers />}
+          />
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
       </Routes>
