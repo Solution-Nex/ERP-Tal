@@ -1,4 +1,4 @@
- export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype";
+ export type MenuState = "gateway" | "info" | "accounts"  | "ledgers" | "vouchertype" | "groups";
 
 export interface MenuItem {
   id: string;
@@ -15,10 +15,9 @@ export const menuTitles: Record<MenuState, string> = {
   gateway: "Gateway of Tally",
   info: "Company info",
   accounts: "Accounts Info",
-
   ledgers: "Ledgers",
   groups: "Groups",
-  voucherTypes: "Voucher Types",
+  vouchertype: "Voucher Types",
 };
 
 export const createMenuItems = (
@@ -85,7 +84,11 @@ export const createMenuItems = (
       label: "Ledger",
       onClick: () => handleMenuAction("ledgers"),
     },
-    { id: "voucher-types", label: "Voucher Types", onClick: ()=> handleMenuAction("vouchertype") },
+    {
+      id: "voucher-types",
+      label: "Voucher Types",
+      onClick: () => handleMenuAction("vouchertype"),
+    },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("gateway") },
   ],
   ledgers: [
@@ -96,8 +99,61 @@ export const createMenuItems = (
   ],
   vouchertype: [
     { id: "create", label: "Create", path: "/voucher-creation" },
-    { id: "display", label: "Display", path: "/voucher-creation" },
+    { id: "display", label: "Display", path: "/voucher-type" },
     { id: "alter", label: "Alter", path: "/voucher-creation" },
+    { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
+  ],
+  groups: [
+    // Single Group
+    {
+      id: "sg-create",
+      label: "Create",
+      path: "/create-single-group",
+      section: "Single Group",
+      highlightChar: 0,
+      state: { mode: "create" },
+    },
+    {
+      id: "sg-display",
+      label: "Display",
+      path: "/select-group",
+      section: "Single Group",
+      highlightChar: 0,
+      state: { mode: "display" },
+    },
+    {
+      id: "sg-alter",
+      label: "Alter",
+      path: "/select-group",
+      section: "Single Group",
+      highlightChar: 0,
+      state: { mode: "alter" },
+    },
+    // Multiple Groups
+    {
+      id: "mg-create",
+      label: "Create",
+      path: "/create-multiple-groups",
+      section: "Multiple Groups",
+      highlightChar: 0,
+      state: { mode: "create-multiple" },
+    },
+    {
+      id: "mg-display",
+      label: "Display",
+      path: "/select-group",
+      section: "Multiple Groups",
+      highlightChar: 1,
+      state: { mode: "display-multiple" },
+    },
+    {
+      id: "mg-alter",
+      label: "Alter",
+      path: "/select-group",
+      section: "Multiple Groups",
+      highlightChar: 2,
+      state: { mode: "alter-multiple" },
+    },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
 });

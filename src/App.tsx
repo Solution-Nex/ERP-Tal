@@ -30,18 +30,33 @@ function App() {
           <Route index element={<GateWayofTally />}></Route>
           <Route path="/select-company" element={<SelectCompany />}></Route>
           <Route path="/create-company" element={<Compneycreation />}></Route>
-          <Route path="/ledger-creation" element={<LedgerCreation />} />
-          <Route path="/ledger-selection" element={<SelectLedger />} />
-          <Route path='/voucher-type' element={<Vouchertype/>} />
-          <Route path='/voucher-creation' element={<Vouchercreation/>} />
-          <Route path='/advancevouchersetting' element={<Advancevoucher/>} />
-          <Route path='/groups' element={<Groups />} />
-          <Route path='/create-single-group' element={<Singlegroupcreation />} />
-          <Route path='/create-multiple-groups' element={<Multiplegroupcreate />} />
-          <Route path='/select-group' element={<Grouplists/>} />
-          <Route path='/payment-accounting-voucher' element={<Paymentvoucher/>} />
-          <Route path='/contra-accounting-voucher' element={<Contravoucher/>} />
-          <Route path='/recipt-accounting-voucher' element={<Reciptvoucher/>} />
+          <Route path="/accounts/new-ledger" element={<LedgerCreation />} />
+          <Route path="/accounts/ledgers" element={<SelectLedger />} />
+          <Route path="/voucher-type" element={<Vouchertype />} />
+          <Route path="/voucher-creation" element={<VoucherForm />} />
+          <Route path="/advancevouchersetting" element={<Advancevoucher />} />
+          {/* <Route path='/groups' element={<Groups />} /> */}
+          <Route
+            path="/create-single-group"
+            element={<Singlegroupcreation />}
+          />
+          <Route
+            path="/create-multiple-groups"
+            element={<Multiplegroupcreate />}
+          />
+          <Route path="/select-group" element={<Grouplists />} />
+          <Route
+            path="/payment-accounting-voucher"
+            element={<Paymentvoucher />}
+          />
+          <Route
+            path="/contra-accounting-voucher"
+            element={<Contravoucher />}
+          />
+          <Route
+            path="/recipt-accounting-voucher"
+            element={<Reciptvoucher />}
+          />
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="*" element={<NotFound />}></Route>

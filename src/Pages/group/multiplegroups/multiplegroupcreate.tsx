@@ -9,12 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../../store/store";
 import { createMultipleGroups, updateMultipleGroups } from "../slice";
 import type { Group, GroupFromBackend } from "../types";
 
-// interface GroupRow {
-//   id: number;
-//   name: string;
-//   under: string;
-// }
-
 const MultiGroupCreation = () => {
   const dispatch = useAppDispatch();
   const { loading: groupsLoading, error: groupsError } = useAppSelector(
@@ -26,23 +20,56 @@ const MultiGroupCreation = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const yesButtonRef = useRef<HTMLButtonElement | null>(null);
-  const previouslyFocused = useRef<HTMLElement | null>(null);
-  const fieldRefs = useRef<(HTMLInputElement | HTMLSelectElement | null)[]>([]);
-  const focusedIndex = useRef(0);
 
-  {
-    /*for display group */
-  }
+  const yesButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocused = useRef<HTMLElement>(null);
+  const fieldRefs = useRef<(HTMLInputElement | HTMLSelectElement)[]>([]);
+
   const mode = location.state?.mode ?? "create-multiple";
   const group = location.state?.group ?? "";
 
+  const isDisplayMode = mode === "display-multiple";
+  const isAlterMode = mode === "alter-multiple";
+//   const isCreateMode = mode === "create-multiple";
+
+
   const undergroups = ["Bank Account", "Capital Account", "Asset details"];
 
-  const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
-  const [activeRow, setActiveRow] = useState<number>(4);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [activeRow, setActiveRow] = useState(0);
 
-  const [rows, setRows] = useState<Group[]>([
+//   const [rows, setRows] = useState<Group[]>([
+//     {
+//       id: "1",
+//       name: "",
+//       alias: "",
+//       under: "",
+//       behavesLikeSubLedger: "No",
+//       netDebitCredit: "Yes",
+//       usedForCalculation: "Yes",
+//       allocationMethod: "None",
+//       companyId: "ideeee",
+//     },
+//   ]);
+
+const [rows, setRows] = useState<Group[]>(() => {
+  if ((isDisplayMode || isAlterMode) && group) {
+    return [
+      {
+        id: "1",
+        name: group.name,
+        alias: group.alias,
+        under: group.under,
+        behavesLikeSubLedger: group.behavesLikeSubLedger,
+        netDebitCredit: group.netDebitCredit,
+        usedForCalculation: group.usedForCalculation,
+        allocationMethod: "None",
+        companyId: selectedCompany?._id || "",
+      },
+    ];
+  }
+
+  return [
     {
       id: "1",
       name: "",
@@ -52,98 +79,11 @@ const MultiGroupCreation = () => {
       netDebitCredit: "Yes",
       usedForCalculation: "Yes",
       allocationMethod: "None",
-      companyId: "ideeee",
+      companyId: selectedCompany?._id || "",
     },
-  ]);
-
-  const isFormField = (el: HTMLElement | null) => {
-    if (!el) return false;
-    return (
-      el.tagName === "INPUT" ||
-      el.tagName === "SELECT" ||
-      el.tagName === "TEXTAREA"
-    );
-  };
-
-  // keyboard handlers
-  useEffect(() => {
-    document.title = "Create single group - SN ERP";
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        navigate(-1);
-      }
-      if (e.key === "ArrowRight") {
-        navigate(+1);
-      }
-
-      // If modal is open, handle modal-specific keys
-      if (confirmOpen) {
-        if (e.key === "Escape") {
-          e.preventDefault();
-          setConfirmOpen(false);
-          previouslyFocused.current?.focus();
-        }
-        // allow 'y' and 'n' keys
-        if (e.key.toLowerCase() === "y" || e.key === "Enter") {
-          e.preventDefault();
-          e.stopPropagation();
-          submitFromModal();
-        }
-        if (e.key.toLowerCase() === "n") {
-          e.preventDefault();
-          e.stopPropagation();
-          setConfirmOpen(false);
-          previouslyFocused.current?.focus();
-        }
-      }
-
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
-        e.preventDefault();
-        if (mode === "create-multiple") {
-          navigate("/select-group");
-        } else {
-          navigate("/select-group");
-        }
-        return;
-      }
-
-      // if (formRef.current && formRef.current.contains(document.activeElement)) {
-      const active = document.activeElement as HTMLElement | null;
-
-      // Ignore inside select dropdown open
-      if (active?.tagName === "SELECT") return;
-
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        const next = focusedIndex.current + 1;
-
-        fieldRefs.current[next]?.focus();
-        focusedIndex.current = next;
-      }
-
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        const prev = focusedIndex.current - 1;
-
-        fieldRefs.current[prev]?.focus();
-        focusedIndex.current = prev;
-      }
-
-      if (e.key === "Enter") {
-        const active = document.activeElement as HTMLElement | null;
-        const inField = isFormField(active);
-        // If typing inside input/select → do NOT open confirm
-        if (inField) return;
-
-        e.preventDefault();
-        openConfirmModal();
-      }
-
-      // Enter opens confirmation modal instead of submitting directly
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [confirmOpen, navigate]);
+  ];
+});
+  
 
   const {
     register,
@@ -160,13 +100,16 @@ const MultiGroupCreation = () => {
     },
   });
 
+  const selectedUnder = watch("under");
+
+  /* ---------- sync rows -> RHF ---------- */
   useEffect(() => {
     setValue(
       "groups",
       rows.map((r) => ({
+        id: String(r.id),
         name: r.name,
         under: r.under,
-        id: String(r.id),
         alias: r.alias,
         behavesLikeSubLedger: r.behavesLikeSubLedger,
         netDebitCredit: r.netDebitCredit,
@@ -177,15 +120,7 @@ const MultiGroupCreation = () => {
     );
   }, [rows, setValue, selectedCompany?._id]);
 
-  const selectedUnder = watch("under");
-  useEffect(() => {
-    if (group) {
-      setValue(`groups.0.name`, group);
-    }
-  }, [group, setValue]);
-
-//   const selectedUnder = watch("under");
-
+  /* ---------- set under for all existing rows ---------- */
   useEffect(() => {
     if (!selectedUnder) return;
 
@@ -197,20 +132,56 @@ const MultiGroupCreation = () => {
     );
   }, [selectedUnder]);
 
-  const submitFromModal = () => {
-    setConfirmOpen(false);
-    previouslyFocused.current?.blur();
-    // programmatically run react-hook-form submit
-    handleSubmit(onSubmit)();
-  };
+  /* ---------- prefill first group ---------- */
+  useEffect(() => {
+    if (group) {
+      setValue("groups.0.name", group);
+    }
+  }, [group, setValue]);
 
+  /* ---------- keyboard handling ---------- */
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (confirmOpen) {
+        if (isDisplayMode) return;
+
+        if (e.key === "Escape") {
+          setConfirmOpen(false);
+          previouslyFocused.current?.focus();
+        }
+        if (e.key.toLowerCase() === "y" || e.key === "Enter") {
+          e.preventDefault();
+          submitFromModal();
+        }
+        if (e.key.toLowerCase() === "n") {
+          setConfirmOpen(false);
+          previouslyFocused.current?.focus();
+        }
+        return;
+      }
+
+      if (e.key === "Enter") {
+        const active = document.activeElement as HTMLElement | null;
+        if (
+          active?.tagName === "INPUT" ||
+          active?.tagName === "SELECT" ||
+          active?.tagName === "TEXTAREA"
+        ) {
+          return;
+        }
+        e.preventDefault();
+        openConfirmModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [confirmOpen]);
+
+  /* ---------- confirm modal ---------- */
   const openConfirmModal = () => {
-    // Get current form values
     const formData = getValues();
     const nonEmptyGroups = (formData.groups || []).filter((g) => g && g.name && g.name.trim());
-
-    console.log("📋 Form Data:", formData);
-    console.log("📊 Non-empty groups:", nonEmptyGroups.length);
 
     if (nonEmptyGroups.length === 0) {
       alert("Please add at least one group before submitting.");
@@ -221,43 +192,37 @@ const MultiGroupCreation = () => {
     setConfirmOpen(true);
   };
 
+  const submitFromModal = () => {
+    setConfirmOpen(false);
+    handleSubmit(onSubmit)();
+  };
+
+  /* ---------- submit ---------- */
   const onSubmit = async (data: GroupFormValues) => {
     try {
-      const groupsToSubmit = data.groups.map((g) => ({
-        name: g.name,
-        under: g.under,
-        behavesLikeSubLedger: "No" as const,
-        netDebitCredit: "No" as const,
-        usedForCalculation: "No" as const,
-        allocationMethod: "",
-        companyId: selectedCompany?._id,
-      }));
-
-      console.log("═══════════════════════════════════════");
-      console.log("🎯 MULTIPLE GROUP SUBMISSION");
-      console.log("═══════════════════════════════════════");
-      console.log("Mode:", mode);
-      console.log("Company:", selectedCompany?.name);
-      console.log("Groups to submit:", groupsToSubmit);
-      console.log("═══════════════════════════════════════");
+      const groupsToSubmit = data.groups
+        .filter((g) => g.name && g.name.trim())
+        .map((g) => ({
+          name: g.name,
+          under: g.under,
+          behavesLikeSubLedger: "No" as const,
+          netDebitCredit: "No" as const,
+          usedForCalculation: "No" as const,
+          allocationMethod: "",
+          companyId: selectedCompany?._id,
+        }));
 
       if (mode === "create-multiple") {
-        console.log("📝 CREATING MULTIPLE GROUPS...");
         await dispatch(createMultipleGroups(groupsToSubmit)).unwrap();
-        console.log("✓ GROUPS CREATED SUCCESSFULLY");
-        navigate("/groups");
-      } else if (mode === "alter-multiple") {
-        console.log("✏️ UPDATING MULTIPLE GROUPS...");
-        // For update, we need the full GroupFromBackend with _id
-        // This would typically come from location.state or loaded data
+      } else {
         await dispatch(
           updateMultipleGroups(groupsToSubmit as GroupFromBackend[])
         ).unwrap();
-        console.log("✓ GROUPS UPDATED SUCCESSFULLY");
-        navigate("/groups");
       }
-    } catch (error) {
-      console.error("❌ SUBMISSION FAILED:", error);
+
+      navigate("/groups");
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -267,44 +232,33 @@ const MultiGroupCreation = () => {
     <div className="h-screen bg-[#c5c6c7] text-sm">
       {/* Header */}
       <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
-        <div>
-          <h1 className="capitalize text-black text-md  font-semibold">
-            {mode === "create"
-              ? "Multiple group creation"
-              : mode === "display"
-              ? "Display Groups"
-              : mode === "alter"
-              ? "Update Values of groups"
-              : "Gateway of Tally"}
-          </h1>
-        </div>
-        <h1 className="capitalize text-black text-md  font-semibold">
-          {selectedCompany && selectedCompany.name}
-        </h1>
-        <div className="flex items-center gap-3">
-          <h1 className="text-muted">Ctrl + M</h1>
-          <button
-            type="button"
-            className=" text-[var(--text)]"
-            aria-label="Close"
-          >
-            <AiTwotoneCloseSquare
-              className="w-5 h-5"
-              onClick={() => navigate("/")}
-            />
-          </button>
-        </div>
+        <h1 className="font-semibold">Multiple Group Creation</h1>
+        <h1 className="font-semibold">{selectedCompany?.name}</h1>
+        <AiTwotoneCloseSquare
+          className="w-5 h-5 cursor-pointer"
+          onClick={() => navigate("/")}
+        />
       </div>
 
-      {/* SUB HEADER */}
+      {/* Under Group */}
       <div className="px-3 my-4">
-        <Select
+        {/* <Select
           label="Under Group"
           options={undergroups}
           {...underField}
           ref={(el) => {
             rhfRef(el);
-            fieldRefs.current[0] = el;
+            if (el) fieldRefs.current[0] = el;
+          }}
+        /> */}
+        <Select
+          label="Under Group"
+          options={undergroups}
+          disabled={isDisplayMode}
+          {...underField}
+          ref={(el) => {
+            rhfRef(el);
+            if (el) fieldRefs.current[0] = el;
           }}
         />
         {errors.under && (
@@ -312,14 +266,13 @@ const MultiGroupCreation = () => {
         )}
       </div>
 
-      {/* TABLE HEADER */}
-      <div className="grid grid-cols-[60px_1fr_200px] border-y border-black px-3 font-semibold">
-        <div className="border-r border-black py-1 px-2">S.No.</div>
-        <div className="border-r border-black py-1 px-2">Name of Group</div>
-        <div className="py-1 px-2">Under</div>
+      {/* Table */}
+      <div className="grid grid-cols-[60px_1fr_200px] border-y px-3 font-semibold">
+        <div>S.No.</div>
+        <div>Name of Group</div>
+        <div>Under</div>
       </div>
 
-      {/* TABLE BODY */}
       {rows.map((row, index) => (
         <div
           key={row.id}
@@ -330,15 +283,12 @@ const MultiGroupCreation = () => {
         >
           <div>{index + 1}.</div>
 
-          <input
+          {/* <input
             {...register(`groups.${index}.name` as const)}
             ref={(el) => {
-              fieldRefs.current[index + 1] = el;
+              if (el) fieldRefs.current[index + 1] = el;
             }}
-            className={`bg-transparent outline-none max-w-52 ${
-              activeRow === index ? "border border-black px-1" : ""
-            }`}
-            readOnly={mode === "display-multiple"}
+            className="bg-transparent outline-none"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -347,10 +297,10 @@ const MultiGroupCreation = () => {
                   setRows((prev) => [
                     ...prev,
                     {
-                      id: prev.length + 1,
+                      id: String(prev.length + 1),
                       name: "",
                       alias: "",
-                      under: "",
+                      under: selectedUnder || "",
                       behavesLikeSubLedger: "No",
                       netDebitCredit: "Yes",
                       usedForCalculation: "Yes",
@@ -364,54 +314,111 @@ const MultiGroupCreation = () => {
                 fieldRefs.current[index + 2]?.focus();
               }
             }}
+          /> */}
+
+          {/* <input
+            {...register(`groups.${index}.name` as const)}
+            value={row.name}
+            onChange={(e) => {
+              const value = e.target.value;
+              setRows((prev) =>
+                prev.map((r, i) => (i === index ? { ...r, name: value } : r))
+              );
+            }}
+            ref={(el) => {
+              if (el) fieldRefs.current[index + 1] = el;
+            }}
+            className="bg-transparent outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+
+                if (index === rows.length - 1) {
+                  setRows((prev) => [
+                    ...prev,
+                    {
+                      id: String(prev.length + 1),
+                      name: "",
+                      alias: "",
+                      under: selectedUnder || "",
+                      behavesLikeSubLedger: "No",
+                      netDebitCredit: "Yes",
+                      usedForCalculation: "Yes",
+                      allocationMethod: "None",
+                      companyId: "ideeee",
+                    },
+                  ]);
+                }
+
+                setActiveRow(index + 1);
+                fieldRefs.current[index + 2]?.focus();
+              }
+            }}
+          /> */}
+
+          <input
+            {...register(`groups.${index}.name` as const)}
+            value={row.name}
+            readOnly={isDisplayMode}
+            onChange={(e) => {
+              if (isDisplayMode) return;
+
+              const value = e.target.value;
+              setRows((prev) =>
+                prev.map((r, i) => (i === index ? { ...r, name: value } : r))
+              );
+            }}
+            ref={(el) => {
+              if (el) fieldRefs.current[index + 1] = el;
+            }}
+            className={`bg-transparent outline-none ${
+              isDisplayMode ? "cursor-not-allowed opacity-70" : ""
+            }`}
+            onKeyDown={(e) => {
+              if (isDisplayMode) return;
+
+              if (e.key === "Enter") {
+                e.preventDefault();
+
+                if (index === rows.length - 1) {
+                  setRows((prev) => [
+                    ...prev,
+                    {
+                      id: String(prev.length + 1),
+                      name: "",
+                      alias: "",
+                      under: selectedUnder || "",
+                      behavesLikeSubLedger: "No",
+                      netDebitCredit: "Yes",
+                      usedForCalculation: "Yes",
+                      allocationMethod: "None",
+                      companyId: selectedCompany?._id || "",
+                    },
+                  ]);
+                }
+
+                setActiveRow(index + 1);
+                fieldRefs.current[index + 2]?.focus();
+              }
+            }}
           />
-          {errors.groups?.[index]?.name && (
-            <p className="text-red-600 text-xs">
-              {errors.groups[index]?.name?.message}
-            </p>
-          )}
 
           <div>{row.under}</div>
         </div>
       ))}
 
-      {/* Confirmation modal (desktop-styled) */}
+      {/* Confirm Modal */}
       {confirmOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Confirm submit"
-          onClick={() => {
-            setConfirmOpen(false);
-            previouslyFocused.current?.focus();
-          }}
-        >
-          <div
-            className="w-[200px] bg-surface  shadow-xl p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-md font-semibold mb-3">Confirm Submit</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 w-[200px]">
+            <h2 className="font-semibold mb-3">Confirm Submit</h2>
             {groupsError && (
-              <p className="text-red-600 text-sm mb-3">{groupsError}</p>
+              <p className="text-red-600 text-sm">{groupsError}</p>
             )}
-
-            <div className="flex justify-between gap-3">
-              <button
-                type="button"
-                className="px-4 py-2  bg-gray-200 hover:bg-gray-300"
-                disabled={groupsLoading}
-                onClick={() => {
-                  setConfirmOpen(false);
-                  previouslyFocused.current?.focus();
-                }}
-              >
-                No
-              </button>
+            <div className="flex justify-between">
+              <button onClick={() => setConfirmOpen(false)}>No</button>
               <button
                 ref={yesButtonRef}
-                type="button"
-                className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={groupsLoading}
                 onClick={submitFromModal}
               >
