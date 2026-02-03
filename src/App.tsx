@@ -21,7 +21,10 @@ const Advancevoucher = lazy(()=> import("./Pages/vouchers/Advancevoucher"))
 const Paymentvoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/paymentvoucher"))
 const Contravoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/Contravoucher"))
 const Reciptvoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/Reciptvoucher"))
-
+const Journalvoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/journalvoucher"))
+const Salesvoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/Salevoucher"))
+const Salespartydetail = lazy(()=> import("./Pages/vouchers/accountingvoucher/Salespartydetail"))
+const Purchasevoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/Purchasevoucher"))
 function App() {
   
   return (
@@ -37,28 +40,18 @@ function App() {
           <Route path="/voucher-creation" element={<VoucherForm />} />
           <Route path="/select-voucher-type" element={<SelectVoucher />} />
           <Route path="/advancevouchersetting" element={<Advancevoucher />} />
+          <Route path="/advance-voucher-setting" element={<Advancevoucher />} />
           {/* <Route path='/groups' element={<Groups />} /> */}
-          <Route
-            path="/create-single-group"
-            element={<Singlegroupcreation />}
-          />
-          <Route
-            path="/create-multiple-groups"
-            element={<Multiplegroupcreate />}
-          />
+          <Route path="/create-single-group" element={<Singlegroupcreation />}/>
+          <Route path="/create-multiple-groups" element={<Multiplegroupcreate />}/>
           <Route path="/select-group" element={<Grouplists />} />
-          <Route
-            path="/payment-accounting-voucher"
-            element={<Paymentvoucher />}
-          />
-          <Route
-            path="/contra-accounting-voucher"
-            element={<Contravoucher />}
-          />
-          <Route
-            path="/recipt-accounting-voucher"
-            element={<Reciptvoucher />}
-          />
+          <Route path="/payment-accounting-voucher" element={<Paymentvoucher />} />
+          <Route path="/contra-accounting-voucher" element={<Contravoucher />} />
+          <Route path="/recipt-accounting-voucher" element={<Reciptvoucher />}/>
+          <Route path="/journal-accounting-voucher" element={<Journalvoucher />}/>
+          <Route path="/sales-accounting-voucher" element={<Salesvoucher />}/>
+          <Route path="/sales-party-detail" element={<Salespartydetail />}/>
+          <Route path="/purchase-accounting-voucher" element={<Purchasevoucher />}/>
         </Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="*" element={<NotFound />}></Route>
