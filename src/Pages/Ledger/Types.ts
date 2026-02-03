@@ -1,7 +1,8 @@
-export type FormDataType = {
+export interface FormDataType {
   ledgerName: string;
   ledgerAlias: string;
   toB: string;
+  under?: string;
   acholderName: string;
   acNumber: string;
   ifsCode: string;
@@ -22,3 +23,9 @@ export type FormDataType = {
 export type FormChangeEvent = React.ChangeEvent<
   HTMLInputElement | HTMLSelectElement
 >;
+
+export interface LedgerFromBackend extends FormDataType {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}

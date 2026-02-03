@@ -3,8 +3,9 @@ import { useAppDispatch, useAppSelector } from "../../store/store";
 import {
   fetchCompanies,
   setSelectedCompany,
-  type CompanyFromBackend,
 } from "./slice";
+
+import type { CompanyFromBackend } from "./types"
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 

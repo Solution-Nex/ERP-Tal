@@ -181,7 +181,6 @@ const SelectGroup: FC = () => {
   }, [search]);
 
   const handleSelect = (group: Partial<GroupFromBackend>) => {
-    console.log("handle group", group);
     if (mode == "create" || mode === "display" || mode === "alter") {
       navigate("/create-single-group", {
         state: {

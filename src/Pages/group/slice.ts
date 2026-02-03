@@ -3,6 +3,7 @@ import type { Group, GroupFromBackend } from "./types";
 import * as groupApi from "./api";
 
 interface GroupsState {
+  // groups: Partial<GroupFromBackend>[];
   groups: GroupFromBackend[];
   selectedGroup: GroupFromBackend | null;
   isEditing: boolean;
@@ -12,6 +13,11 @@ interface GroupsState {
 }
 
 const initialState: GroupsState = {
+  // groups: [
+  //   { _id: "1", name: "Sundry Debtors", under: "Current Assets", behavesLikeSubLedger: "No", netDebitCredit: "No", usedForCalculation: "No", allocationMethod: "" },
+  //   { _id: "2", name: "Sundry Creditors", under: "Current Liabilities", behavesLikeSubLedger: "No", netDebitCredit: "No", usedForCalculation: "No", allocationMethod: "" },
+  //   { _id: "3", name: "Sales Accounts", under: "Sales Accounts", behavesLikeSubLedger: "No", netDebitCredit: "No", usedForCalculation: "No", allocationMethod: "" },
+  // ],
   groups: [],
   selectedGroup: null,
   isEditing: false,
@@ -128,19 +134,19 @@ export const deleteGroupAsync = createAsyncThunk<
 });
 
 // Delete multiple groups
-export const deleteMultipleGroups = createAsyncThunk<
-  string[],
-  string[],
-  { rejectValue: string }
->("groups/deleteMultiple", async (ids, { rejectWithValue }) => {
-  try {
-    await groupApi.deleteMultiple(ids);
-    return ids;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete groups";
-    return rejectWithValue(message);
-  }
-});
+// export const deleteMultipleGroups = createAsyncThunk<
+//   string[],
+//   string[],
+//   { rejectValue: string }
+// >("groups/deleteMultiple", async (ids, { rejectWithValue }) => {
+//   try {
+//     await groupApi.deleteMultiple(ids);
+//     return ids;
+//   } catch (error) {
+//     const message = error instanceof Error ? error.message : "Failed to delete groups";
+//     return rejectWithValue(message);
+//   }
+// });
 
 const groupsSlice = createSlice({
   name: "groups",
@@ -268,39 +274,39 @@ const groupsSlice = createSlice({
 
     // ========== DELETE GROUP ==========
     builder
-      .addCase(deleteGroupAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(deleteGroupAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        state.groups = state.groups.filter((g) => g.id !== action.payload);
-        if (state.selectedGroup?.id === action.payload) {
-          state.selectedGroup = null;
-        }
-      })
-      .addCase(deleteGroupAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Failed to delete group";
-      });
+      // .addCase(deleteGroupAsync.pending, (state) => {
+      //   state.loading = true;
+      //   state.error = null;
+      // })
+      // .addCase(deleteGroupAsync.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.groups = state.groups.filter((g) => g.id !== action.payload);
+      //   if (state.selectedGroup?.id === action.payload) {
+      //     state.selectedGroup = null;
+      //   }
+      // })
+      // .addCase(deleteGroupAsync.rejected, (state, action) => {
+      //   state.loading = false;
+      //   state.error = action.payload || "Failed to delete group";
+      // });
 
     // ========== DELETE MULTIPLE GROUPS ==========
-    builder
-      .addCase(deleteMultipleGroups.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(deleteMultipleGroups.fulfilled, (state, action) => {
-        state.loading = false;
-        state.groups = state.groups.filter((g) => !action.payload.includes(g._id));
-        if (state.selectedGroup && action.payload.includes(state.selectedGroup._id)) {
-          state.selectedGroup = null;
-        }
-      })
-      .addCase(deleteMultipleGroups.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Failed to delete groups";
-      });
+    // builder
+    //   .addCase(deleteMultipleGroups.pending, (state) => {
+    //     state.loading = true;
+    //     state.error = null;
+    //   })
+    //   .addCase(deleteMultipleGroups.fulfilled, (state, action) => {
+    //     state.loading = false;
+    //     state.groups = state.groups.filter((g) => !action.payload.includes(g._id));
+    //     if (state.selectedGroup && action.payload.includes(state.selectedGroup._id)) {
+    //       state.selectedGroup = null;
+    //     }
+    //   })
+    //   .addCase(deleteMultipleGroups.rejected, (state, action) => {
+    //     state.loading = false;
+    //     state.error = action.payload || "Failed to delete groups";
+    //   });
   },
 });
 

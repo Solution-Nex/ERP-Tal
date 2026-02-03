@@ -8,8 +8,6 @@ export interface Group {
   usedForCalculation: "Yes" | "No";
   allocationMethod: string;
   companyId?: string;
-  // createdAt?: string;
-  // updatedAt?: string;
 }
 
 export interface GroupFromBackend extends Group {
