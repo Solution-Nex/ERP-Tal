@@ -1,42 +1,55 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import type { FormChangeEvent, FormDataType } from "./Types";
 import Select from "../../Components/common/Select";
 import Field from "../../Components/common/Field";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { createLedger, updateLedger } from "./slice";
 
 const LedgerCreation = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const location = useLocation()
+  const mode = location.state?.mode ?? "create";
+  const ledger = location.state?.ledger;
+  const { groups } = useAppSelector((state) => state.groups);
   const formRef = useRef<HTMLFormElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
-
-  const [under, setunder] = useState<string>("");
+  const [under, setunder] = useState<string | undefined>(" ");
   const [showGroupList, setGroupList] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
   const [errors, setErrors] = useState<
     Partial<Record<keyof FormDataType | "under", string>>
   >({});
-  const [FormData, setFormData] = useState<FormDataType>({
-    ledgerName: "",
-    ledgerAlias: "",
-    toB: "200 $",
-    acholderName: "",
-    acNumber: "",
-    ifsCode: "",
-    bankName: "Not Applicable",
-    bankBranch: "",
-    checkBooks: "No",
-    checkPrintConfig: "No",
-    inventoryValue: "No",
-    ledgerType: "Not Applicable",
-    mailName: "",
-    mailAddress: "",
-    mailCountry: "Pakistan",
-    mailState: "Punjab",
-    mailPinCode: "",
-    mailBankDetails: "No",
-    panItNO: "",
+  const [FormData, setFormData] = useState<FormDataType>(() => {
+    if (ledger) {
+      return ledger;
+    } else {
+      return {
+        ledgerName: "",
+        ledgerAlias: "",
+        toB: "",
+        under: "",
+        acholderName: "",
+        acNumber: "",
+        ifsCode: "",
+        bankName: "Not Applicable",
+        bankBranch: "",
+        checkBooks: "No",
+        checkPrintConfig: "No",
+        inventoryValue: "No",
+        ledgerType: "Not Applicable",
+        mailName: "",
+        mailAddress: "",
+        mailCountry: "Pakistan",
+        mailState: "Punjab",
+        mailPinCode: "",
+        mailBankDetails: "No",
+        panItNO: "",
+      };
+    }
   });
 
   const Validate = (): boolean => {
@@ -45,7 +58,7 @@ const LedgerCreation = () => {
     if (!FormData.ledgerName.trim()) {
       newErrors.ledgerName = "Ledger Name is Required";
     }
-    if (!under.trim()) {
+    if (!under?.trim()) {
       newErrors.under = "Please Select Group";
     }
     if (!FormData.mailName.trim()) {
@@ -97,8 +110,17 @@ const LedgerCreation = () => {
     const firstErrorFieldName = Object.keys(errors)[0];
     if (!firstErrorFieldName) return;
 
+    // Special handling for "under" field since it's controlled by state
+    if (firstErrorFieldName === "under") {
+      const underField = form.querySelector(
+        `[name="under"]`,
+      ) as HTMLElement | null;
+      underField?.focus();
+      return;
+    }
+
     const field = form.querySelector(
-      `[name="${firstErrorFieldName}"]`
+      `[name="${firstErrorFieldName}"]`,
     ) as HTMLElement | null;
 
     field?.focus();
@@ -109,18 +131,21 @@ const LedgerCreation = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const GroupList = [
-    "Bank Accounts",
-    "Bank OCC A/c",
-    "Bank OD A/c",
-    "Branch / Divisons",
-    "Capital Account",
-    "Cash-in-Hand",
-    "Current Assets",
-  ];
+  const GroupList =
+    groups.length > 0
+      ? groups?.map((group) => group.name)
+      : [
+          "Bank Accounts",
+          "Bank OCC A/c",
+          "Bank OD A/c",
+          "Branch / Divisons",
+          "Capital Account",
+          "Cash-in-Hand",
+          "Current Assets",
+        ];
 
   const FilterGroupList = GroupList.filter((item) =>
-    item.toLowerCase().includes(under.toLowerCase())
+    item?.toLowerCase().includes(under?.toLowerCase() || ""),
   );
 
   // Helper to move focus between inputs (Tally style)
@@ -129,8 +154,8 @@ const LedgerCreation = () => {
     if (!form) return;
     const focusable = Array.from(
       form.querySelectorAll<HTMLElement>(
-        "input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])"
-      )
+        "input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])",
+      ),
     ).filter((el) => el.tabIndex !== -1);
 
     const active = document.activeElement as HTMLElement | null;
@@ -145,15 +170,16 @@ const LedgerCreation = () => {
     if (e) e.preventDefault();
 
     if (!Validate()) return;
-    console.log("Final Data:", { ...FormData, under });
-
+    const dataToSend = { ...FormData, under };
+    if (mode === "alter") {
+      dispatch(
+        updateLedger({ id: ledger!._id, ledgerData: dataToSend }),
+      ).unwrap();
+    } else {
+      dispatch(createLedger(dataToSend)).unwrap();
+    }
     setConfirmOpen(false);
-    navigate("/");
-  };
-
-  const handleAskConfirm = () => {
-    if (!Validate()) return;
-    setConfirmOpen(true);
+    navigate("/accounts/ledgers");
   };
 
   useEffect(() => {
@@ -193,16 +219,22 @@ const LedgerCreation = () => {
       // Enter Key Logic
       if (e.key === "Enter") {
         const active = document.activeElement as HTMLElement | null;
-        handleAskConfirm();
+
+        // Allow enter in group list dropdown
         if (showGroupList && activeIndex >= 0) {
           return;
         }
 
-        if (active?.tagName !== "TEXTAREA") {
-          e.preventDefault();
+        // Allow enter in textarea
+        if (active?.tagName === "TEXTAREA") {
+          return;
+        }
 
-          previouslyFocused.current = active;
+        e.preventDefault();
+        previouslyFocused.current = active;
 
+        // Validate form and show confirmation modal if valid
+        if (mode !== "display" && Validate()) {
           setConfirmOpen(true);
         }
       }
@@ -210,7 +242,7 @@ const LedgerCreation = () => {
 
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [confirmOpen, showGroupList, activeIndex, navigate]);
+  }, [confirmOpen, showGroupList, activeIndex, navigate, mode, FormData, under]);
 
   return (
     <div className="min-h-screen h-screen flex flex-col w-full ">
@@ -244,6 +276,7 @@ const LedgerCreation = () => {
                   className="w-full"
                   value={FormData.ledgerName}
                   onChange={handleChange}
+                  disabled={mode === "display"}
                 />
                 <Field
                   label="Alias"
@@ -252,6 +285,7 @@ const LedgerCreation = () => {
                   className="w-full"
                   value={FormData.ledgerAlias}
                   onChange={handleChange}
+                  disabled={mode === "display"}
                 />
               </div>
               <div className="flex flex-col items-center justify-center border-gray-400 border px-4">
@@ -264,6 +298,7 @@ const LedgerCreation = () => {
                   onChange={handleChange}
                   name="toB"
                   readOnly
+                  disabled={mode === "display"}
                   className="bg-transparent text-center h-20 text-xl outline-none"
                 />
               </div>
@@ -277,6 +312,7 @@ const LedgerCreation = () => {
                   name="under"
                   value={under}
                   autoComplete="off"
+                  disabled={mode === "display"}
                   onFocus={() => {
                     setGroupList(true);
                     setActiveIndex(-1);
@@ -297,18 +333,19 @@ const LedgerCreation = () => {
                     if (e.key === "ArrowDown") {
                       e.preventDefault();
                       setActiveIndex((prev) =>
-                        prev < FilterGroupList.length - 1 ? prev + 1 : 0
+                        prev < FilterGroupList.length - 1 ? prev + 1 : 0,
                       );
                     }
                     if (e.key === "ArrowUp") {
                       e.preventDefault();
                       setActiveIndex((prev) =>
-                        prev > 0 ? prev - 1 : FilterGroupList.length - 1
+                        prev > 0 ? prev - 1 : FilterGroupList.length - 1,
                       );
                     }
                     if (e.key === "Enter" && activeIndex >= 0) {
                       e.preventDefault();
                       e.stopPropagation(); // Stop the global Enter listener from opening the modal
+
                       setunder(FilterGroupList[activeIndex]);
                       setGroupList(false);
                     }
@@ -330,6 +367,7 @@ const LedgerCreation = () => {
                       className="mt-2"
                       value={FormData.acholderName}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                     <Field
                       label="A/c no."
@@ -337,6 +375,7 @@ const LedgerCreation = () => {
                       name="acNumber"
                       value={FormData.acNumber}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                     <Field
                       label="IFS Code"
@@ -344,6 +383,7 @@ const LedgerCreation = () => {
                       name="ifsCode"
                       value={FormData.ifsCode}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
 
                     <Select
@@ -352,6 +392,7 @@ const LedgerCreation = () => {
                       name="bankName"
                       value={FormData.bankName}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                     <Field
                       label="Branch"
@@ -359,6 +400,7 @@ const LedgerCreation = () => {
                       name="bankBranch"
                       value={FormData.bankBranch}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                     <h3 className="underline font-semibold mt-5">
                       Bank Configuration
@@ -370,6 +412,7 @@ const LedgerCreation = () => {
                       name="checkBooks"
                       value={FormData.checkBooks}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                     <Select
                       className="mt-2"
@@ -378,6 +421,7 @@ const LedgerCreation = () => {
                       name="checkPrintConfig"
                       value={FormData.checkPrintConfig}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                   </div>
                 ) : (
@@ -390,6 +434,7 @@ const LedgerCreation = () => {
                       name="inventoryValue"
                       value={FormData.inventoryValue}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                     <Select
                       label="Ledger Type ?"
@@ -398,15 +443,14 @@ const LedgerCreation = () => {
                       name="ledgerType"
                       value={FormData.ledgerType}
                       onChange={handleChange}
+                      disabled={mode === "display"}
                     />
                   </>
                 )}
               </div>
 
               <div className="w-full ml-3">
-                <h2 className="text-center mb-4 font-sm">
-                  Mailing details
-                </h2>
+                <h2 className="text-center mb-4 font-sm">Mailing details</h2>
                 <Field
                   label="Name"
                   type="text"
@@ -414,6 +458,7 @@ const LedgerCreation = () => {
                   value={FormData.mailName}
                   autoComplete="false"
                   onChange={handleChange}
+                  disabled={mode === "display"}
                 />
                 <Field
                   label="Address"
@@ -422,6 +467,7 @@ const LedgerCreation = () => {
                   name="mailAddress"
                   value={FormData.mailAddress}
                   onChange={handleChange}
+                  disabled={mode === "display"}
                 />
                 <div>
                   <Select
@@ -431,6 +477,7 @@ const LedgerCreation = () => {
                     name="mailCountry"
                     value={FormData.mailCountry}
                     onChange={handleChange}
+                    disabled={mode === "display"}
                   />
                 </div>
                 <div>
@@ -441,6 +488,7 @@ const LedgerCreation = () => {
                     name="mailState"
                     onChange={handleChange}
                     value={FormData.mailState}
+                    disabled={mode === "display"}
                   />
                 </div>
                 <div>
@@ -451,6 +499,7 @@ const LedgerCreation = () => {
                     name="mailPinCode"
                     value={FormData.mailPinCode}
                     onChange={handleChange}
+                    disabled={mode === "display"}
                   />
                 </div>
                 <div className="w-full">
@@ -461,6 +510,7 @@ const LedgerCreation = () => {
                     name="mailBankDetails"
                     onChange={handleChange}
                     value={FormData.mailBankDetails}
+                    disabled={mode === "display"}
                   />
                 </div>
                 <div className="w-full text-center my-4">
@@ -475,6 +525,7 @@ const LedgerCreation = () => {
                   onChange={handleChange}
                   autoComplete="false"
                   value={FormData.panItNO}
+                  disabled={mode === "display"}
                 />
               </div>
             </div>

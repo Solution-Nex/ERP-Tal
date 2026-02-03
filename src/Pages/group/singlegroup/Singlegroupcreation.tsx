@@ -171,7 +171,6 @@ const Groups: FC = () => {
 
     const onSubmit = (data: GroupFormValues) => {
         if (mode === "create") {
-            console.log("CREATE GROUP", data);
             dispatch(createGroup(data));
             navigate("/select-group");
         }
@@ -179,7 +178,6 @@ const Groups: FC = () => {
         if (mode === "alter") {
           dispatch(updateGroup({ id: selectedGroup._id, data: data }));
           navigate("/select-group");
-          console.log("UPDATE GROUP", data);
         }
     };
 

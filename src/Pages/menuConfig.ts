@@ -24,7 +24,7 @@ export const createMenuItems = (
   selectedCompany: any,
   handleMenuAction: (action: MenuState | (() => void)) => void,
   handleShutCompany: () => void,
-  handleAlterCompany: () => void
+  handleAlterCompany: () => void,
 ): Record<MenuState, MenuItem[]> => ({
   gateway: !selectedCompany
     ? [
@@ -92,15 +92,45 @@ export const createMenuItems = (
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("gateway") },
   ],
   ledgers: [
-    { id: "create", label: "Create", path: "/accounts/new-ledger" },
-    { id: "display", label: "Display", path: "/accounts/ledgers" },
-    { id: "alter", label: "Alter", path: "/accounts/new-ledger" },
+    {
+      id: "create",
+      label: "Create",
+      path: "/accounts/new-ledger",
+      state: { mode: "create" },
+    },
+    {
+      id: "display",
+      label: "Display",
+      path: "/accounts/ledgers",
+      state: { mode: "display" },
+    },
+    {
+      id: "alter",
+      label: "Alter",
+      path: "/accounts/ledgers",
+      state: { mode: "alter" },
+    },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
   vouchertype: [
-    { id: "create", label: "Create", path: "/voucher-creation" },
-    { id: "display", label: "Display", path: "/voucher-type" },
-    { id: "alter", label: "Alter", path: "/voucher-creation" },
+    {
+      id: "create",
+      label: "Create",
+      path: "/voucher-creation",
+      state: { mode: "create" },
+    },
+    {
+      id: "display",
+      label: "Display",
+      path: "/select-voucher-type",
+      state: { mode: "display" },
+    },
+    {
+      id: "alter",
+      label: "Alter",
+      path: "/select-voucher-type",
+      state: { mode: "alter" },
+    },
     { id: "quit", label: "Quit", onClick: () => handleMenuAction("accounts") },
   ],
   groups: [

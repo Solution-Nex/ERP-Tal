@@ -3,20 +3,23 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AiTwotoneCloseSquare } from "react-icons/ai";
 import Field from "../../../src/Components/common/Field";
 import Select from "../../../src/Components/common/Select";
-import { groupSchema, type GroupFormValues } from "./types";
+import { voucherTypeSchema, type VoucherTypeFormData } from "./voucherTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useAppSelector } from "../../store/store";
+import { useAppDispatch, useAppSelector } from "../../store/store";
+import { createVoucherType, updateVoucherType } from "./slice";
 
 const VoucherForm: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const formRef = useRef<HTMLFormElement | null>(null);
   const yesButtonRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const undergroups: string[] = [
     "Accountigng Vouchers",
@@ -30,44 +33,39 @@ const VoucherForm: FC = () => {
     (state) => state.company.selectedCompany
   );
 
-  {
-    /*for display group */
-  }
   const mode = location.state?.mode ?? "create";
-  const group = location.state?.group ?? "";
+  const voucherType = location.state?.voucherType;
 
   const {
     register,
     setValue,
     handleSubmit,
-    // control,
     formState: { errors },
-  } = useForm<GroupFormValues>({
-    resolver: zodResolver(groupSchema),
-    defaultValues: {
-      name: "",
-      alias: "",
-      selecttupeofvoucher: "",
-      // abbrivation: "",
-      // methodofvouchernumbering: "Automatic",
-      // useadvanceconfiguration:"No",
-      useeffectivedateforvoucher: "No",
-      makevouchertypeoptionalbydefault: "Yes",
-      allownarrationinvoucher: "No",
-      providenarrationforeachledgerinvoucher: "No",
-      printvoucheraftersaving: "No",
-      // useforposinvoicing: "No",
-      // defaultprinttitle: "",
-      // declaration: "",
-      classname: "",
-    },
+  } = useForm<VoucherTypeFormData>({
+    resolver: zodResolver(voucherTypeSchema),
+    defaultValues: voucherType
+      ? voucherType
+      : {
+          cmpId: selectedCompany?._id || "",
+          name: "",
+          alias: "",
+          typeOfVoucher: "",
+          useEffectiveDateForVoucher: "No",
+          makeVoucherTypeOptionalByDefault: "Yes",
+          allowNarrationInVoucher: "No",
+          provideNarrationForEachLedgerInVoucher: "No",
+          printVoucherAfterSaving: "No",
+          classname: "",
+        },
   });
 
   useEffect(() => {
-    if (group) {
-      setValue("name", group);
+    if (voucherType) {
+      Object.keys(voucherType).forEach((key) => {
+        setValue(key as keyof VoucherTypeFormData, voucherType[key]);
+      });
     }
-  }, [group, setValue]);
+  }, [voucherType, setValue]);
 
   //   const useAdvanceConfig = useWatch({
   //   control,
@@ -105,9 +103,11 @@ const VoucherForm: FC = () => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
         navigate(-1);
+        return;
       }
       if (e.key === "ArrowRight") {
         navigate(+1);
+        return;
       }
 
       // If modal is open, handle modal-specific keys
@@ -116,35 +116,33 @@ const VoucherForm: FC = () => {
           e.preventDefault();
           setConfirmOpen(false);
           previouslyFocused.current?.focus();
+          return;
         }
-        // allow 'y' and 'n' keys
         if (e.key.toLowerCase() === "y") {
           e.preventDefault();
-          e.stopPropagation();
           submitFromModal();
-          navigate("/voucher-type");
+          return;
         }
         if (e.key.toLowerCase() === "n") {
           e.preventDefault();
-          e.stopPropagation();
           setConfirmOpen(false);
           previouslyFocused.current?.focus();
+          return;
         }
         if (e.key === "Enter") {
           e.preventDefault();
-          e.stopPropagation();
           submitFromModal();
-          setConfirmOpen(false);
+          return;
         }
+        return;
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "m") {
         e.preventDefault();
-        navigate("/groups");
+        navigate("/");
         return;
       }
 
-      // if (formRef.current && formRef.current.contains(document.activeElement)) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
         moveFocus(1);
@@ -156,20 +154,23 @@ const VoucherForm: FC = () => {
         return;
       }
 
-      // Enter opens confirmation modal instead of submitting directly
+      // Enter: validate and open modal
       if (e.key === "Enter") {
         const active = document.activeElement as HTMLElement | null;
-        const isTextArea = active?.tagName === "TEXTAREA";
-        if (!isTextArea) {
+        
+        if (mode !== "display") {
           e.preventDefault();
           previouslyFocused.current = active ?? null;
+          
+          // Just open the modal, don't submit yet
           setConfirmOpen(true);
         }
       }
     };
+    
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [confirmOpen, navigate]);
+  }, [confirmOpen, navigate, handleSubmit, mode]);
 
   const submitFromModal = () => {
     setConfirmOpen(false);
@@ -178,31 +179,29 @@ const VoucherForm: FC = () => {
     handleSubmit(onSubmit)();
   };
 
-  const onSubmit = (data: GroupFormValues) => {
-    const formattedData = {
-      ...data,
-      companyId: selectedCompany?._id,
-    };
+  const onSubmit = async (data: VoucherTypeFormData) => {
+    if (mode === "display") return;
 
-    console.log("═══════════════════════════════════════");
-    console.log("🎯 VOUCHER FORM SUBMISSION");
-    console.log("═══════════════════════════════════════");
-    console.log("Mode:", mode);
-    console.log("Company:", {
-      id: selectedCompany?._id,
-      name: selectedCompany?.name,
-    });
-    console.log("Form Data:", formattedData);
-    console.log("═══════════════════════════════════════");
+    setLoading(true);
+    try {
+      if (mode === "create") {
+        await dispatch(
+          createVoucherType(data)
+        ).unwrap();
+      } else if (mode === "alter" && voucherType?._id) {
+        await dispatch(
+          updateVoucherType({
+            id: voucherType._id,
+            voucherTypeData: data,
+          })
+        ).unwrap();
+      }
 
-    if (mode === "create") {
-      console.log("✓ CREATE VOUCHER TYPE");
-      // TODO: Call API to create voucher
-    }
-
-    if (mode === "alter") {
-      console.log("✓ UPDATE VOUCHER TYPE");
-      // TODO: Call API to update voucher
+      setConfirmOpen(false);
+      navigate("/voucher-type");
+    } catch (error) {
+      console.error("Error submitting voucher type:", error);
+      setLoading(false);
     }
   };
 
@@ -212,11 +211,11 @@ const VoucherForm: FC = () => {
 
       <div className="w-full pt-10 flex items-center justify-between bg-gray-300">
         <div>
-          <h1 className="capitalize text-black text-md  font-semibold">
-            Voucher Type Creation
+          <h1 className="capitalize text-black text-md font-semibold">
+            Voucher Type {mode === "create" ? "Creation" : mode === "display" ? "View" : "Edit"}
           </h1>
         </div>
-        <h1 className="capitalize text-black text-md  font-semibold">
+        <h1 className="capitalize text-black text-md font-semibold">
           {selectedCompany?.name}
         </h1>
         <div className="flex items-center gap-3">
@@ -228,7 +227,7 @@ const VoucherForm: FC = () => {
           >
             <AiTwotoneCloseSquare
               className="w-5 h-5"
-              onClick={() => navigate("/groups")}
+              onClick={() => navigate("/")}
             />
           </button>
         </div>
@@ -238,24 +237,33 @@ const VoucherForm: FC = () => {
       <form
         ref={formRef}
         onSubmit={(e) => e.preventDefault()}
-        className=" border-2 border-gray-400"
+        className={`border-2 border-gray-400 ${mode === "display" ? "bg-gray-100" : ""}`}
       >
         <div className="w-full h-full p-3 border-b-2 border-gray-600">
+          {mode === "display" && (
+            <p className="text-sm text-blue-600 font-semibold mb-3">View Mode - Read Only</p>
+          )}
+          {mode === "alter" && (
+            <p className="text-sm text-orange-600 font-semibold mb-3">Edit Mode - Press Enter to Update</p>
+          )}
           {errors.name && (
             <p className="text-red-600 text-sm">{errors.name.message}</p>
           )}
           <Field
             label="Name"
             type="text"
-            readOnly={mode === "display"}
+            disabled={mode === "display"}
             {...register("name")}
           />
 
+          {errors.alias && (
+            <p className="text-red-600 text-sm">{errors.alias.message}</p>
+          )}
           <Field
-            label="(alice)"
+            label="Alias"
             type="text"
-            readOnly={mode === "display"}
-            {...register("name")}
+            disabled={mode === "display"}
+            {...register("alias")}
           />
         </div>
         <div className="w-full h-full flex items-stretch ">
@@ -265,22 +273,17 @@ const VoucherForm: FC = () => {
               <Select
                 label="Type of voucher"
                 options={undergroups}
-                {...register("selecttupeofvoucher")}
+                disabled={mode === "display"}
+                {...register("typeOfVoucher")}
               />
               {undergroups.length === 0 && (
                 <p className="text-yellow-600 text-sm">No groups available</p>
               )}
-              {errors.selecttupeofvoucher && (
+              {errors.typeOfVoucher && (
                 <p className="text-red-600 text-sm">
-                  {errors.selecttupeofvoucher.message}
+                  {errors.typeOfVoucher.message}
                 </p>
               )}
-              {/* <Field
-                label="Abbriviation"
-                type="text"
-                readOnly={mode === "display"}
-                {...register("abbrivation")}
-              /> */}
             </div>
             {/* <div className="border-b-2 border-gray-600 p-4">
               <Select
@@ -298,25 +301,29 @@ const VoucherForm: FC = () => {
               <Select
                 label="Use effective dates for voucher"
                 options={["No", "Yes"]}
-                {...register("useeffectivedateforvoucher")}
+                disabled={mode === "display"}
+                {...register("useEffectiveDateForVoucher")}
               />
 
               <Select
                 label={`Make as "Optional" by default`}
                 options={["No", "Yes"]}
-                {...register("makevouchertypeoptionalbydefault")}
+                disabled={mode === "display"}
+                {...register("makeVoucherTypeOptionalByDefault")}
               />
 
               <Select
                 label="Allow narration in voucher"
-                options={["Yes", "NO"]}
-                {...register("allownarrationinvoucher")}
+                options={["Yes", "No"]}
+                disabled={mode === "display"}
+                {...register("allowNarrationInVoucher")}
               />
 
               <Select
                 label="Provide narration for each ledger in voucher"
-                options={["Yes", "NO"]}
-                {...register("providenarrationforeachledgerinvoucher")}
+                options={["Yes", "No"]}
+                disabled={mode === "display"}
+                {...register("provideNarrationForEachLedgerInVoucher")}
               />
             </div>
           </div>
@@ -327,26 +334,10 @@ const VoucherForm: FC = () => {
             <div className="p-4">
               <Select
                 label="Print voucher after saving"
-                options={["Yes", "NO"]}
-                {...register("printvoucheraftersaving")}
+                options={["Yes", "No"]}
+                disabled={mode === "display"}
+                {...register("printVoucherAfterSaving")}
               />
-              {/* <Select
-                label="Use for POS invoicing"
-                options={["Yes", "NO"]}
-                {...register("useforposinvoicing")}
-              />
-              <Field
-                label="Default print title"
-                type="text"
-                readOnly={mode === "display"}
-                {...register("defaultprinttitle")}
-              />
-              <Field
-                label="Declaration"
-                type="text"
-                readOnly={mode === "display"}
-                {...register("declaration")}
-              /> */}
             </div>
           </div>
           <div className=" w-[20%] pt-5 flex flex-col">
@@ -357,7 +348,7 @@ const VoucherForm: FC = () => {
               <Field
                 className="w-full"
                 type="text"
-                readOnly={mode === "display"}
+                disabled={mode === "display"}
                 {...register("classname")}
               />
             </div>
@@ -393,16 +384,18 @@ const VoucherForm: FC = () => {
                     setConfirmOpen(false);
                     previouslyFocused.current?.focus();
                   }}
+                  disabled={loading}
                 >
                   No
                 </button>
                 <button
                   ref={yesButtonRef}
                   type="button"
-                  className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700"
+                  className="px-4 py-2  bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                   onClick={submitFromModal}
+                  disabled={loading}
                 >
-                  Yes
+                  {loading ? "Submitting..." : "Yes"}
                 </button>
               </div>
             </div>

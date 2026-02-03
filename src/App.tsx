@@ -14,8 +14,9 @@ const Grouplists = lazy(()=> import("./Components/common/Groupslist"))
 const LoginPage = lazy(() => import("./Pages/auth/Login"));
 const LedgerCreation = lazy(() => import("./Pages/Ledger/LedgerCreation"));
 const SelectLedger = lazy(() => import("./Pages/Ledger/SelectLedger"));
-const Vouchertype= lazy(()=> import("./Pages/vouchers/Vouchertype"))
-const VoucherForm = lazy(()=> import("./Pages/vouchers/VoucherForm"))
+// const Vouchertype= lazy(()=> import("./Pages/vouchers/Vouchertype"))
+const VoucherForm = lazy(()=> import("./Pages/vouchers/VoucherForm"));
+const SelectVoucher = lazy(()=> import("./Pages/vouchers/SelectVoucher"))
 const Advancevoucher = lazy(()=> import("./Pages/vouchers/Advancevoucher"))
 const Paymentvoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/paymentvoucher"))
 const Contravoucher = lazy(()=> import("./Pages/vouchers/accountingvoucher/Contravoucher"))
@@ -35,8 +36,10 @@ function App() {
           <Route path="/create-company" element={<Compneycreation />}></Route>
           <Route path="/accounts/new-ledger" element={<LedgerCreation />} />
           <Route path="/accounts/ledgers" element={<SelectLedger />} />
-          <Route path="/voucher-type" element={<Vouchertype />} />
+          {/* <Route path="/voucher-type" element={<Vouchertype />} /> */}
           <Route path="/voucher-creation" element={<VoucherForm />} />
+          <Route path="/select-voucher-type" element={<SelectVoucher />} />
+          <Route path="/advancevouchersetting" element={<Advancevoucher />} />
           <Route path="/advance-voucher-setting" element={<Advancevoucher />} />
           {/* <Route path='/groups' element={<Groups />} /> */}
           <Route path="/create-single-group" element={<Singlegroupcreation />}/>

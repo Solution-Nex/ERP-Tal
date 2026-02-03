@@ -6,7 +6,7 @@ import { useAppSelector } from "../store/store";
 import { setSidebarButtons } from "./sidebarSlice";
 import { useAppDispatch } from "../store/store";
 import { setEditing, setSelectedCompany } from "./company/slice";
-import type { CompanyFromBackend } from "./company/slice";
+import type { CompanyFromBackend } from "./company/types";
 import type { MenuState, MenuItem } from "./menuConfig";
 import { menuTitles, createMenuItems } from "./menuConfig";
 
@@ -15,7 +15,10 @@ const GateWayofTally: FC = () => {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<string>("");
   const [date, setDate] = useState<string>("");
-  const [menuState, setMenuState] = useState<MenuState>("gateway");
+  const [menuState, setMenuState] = useState<MenuState>(() => {
+    const saved = localStorage.getItem("gatewayMenuState");
+    return (saved as MenuState) || "gateway";
+  });
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const itemsRef = useRef<Map<string, HTMLElement | null>>(new Map());
   const { selectedCompany } = useAppSelector((state) => state.company) as {
@@ -35,6 +38,11 @@ const GateWayofTally: FC = () => {
     );
     setDate(now.toLocaleDateString());
   }, []);
+
+  // Persist menuState to localStorage
+  useEffect(() => {
+    localStorage.setItem("gatewayMenuState", menuState);
+  }, [menuState]);
 
   useEffect(() => {
     const items = Array.from(itemsRef.current.values());

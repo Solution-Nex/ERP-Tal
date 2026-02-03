@@ -109,7 +109,6 @@ const companySlice = createSlice({
       state.error = null;
     },
     setSelectedCompany: (state, action: PayloadAction<CompanyFromBackend | null>) => {
-      console.log("in the slice",action.payload)
       const company = action.payload;
       state.selectedCompany = company === null ? null : state.companies.find((c) => c._id === company._id) ?? null;
     },
